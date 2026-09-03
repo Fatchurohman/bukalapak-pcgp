@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pasar Candi Gebang Permai - Lapak Warga</title>
+    <title>Pasar Digital - Candi Gebang Permai</title>
+    <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -41,10 +42,45 @@
             text-align: center;
             margin-bottom: 2.5rem;
             color: #fff;
+            position: relative;
+        }
+
+        /* Tombol Navigasi ke Halaman Penjual */
+        .nav-admin-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(217, 119, 6, 0.2);
+            border: 1px solid var(--accent);
+            color: #fbbf24;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .nav-admin-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .nav-admin-btn {
+                position: relative;
+                margin-top: 1rem;
+                display: inline-flex;
+            }
         }
 
         header h1 {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
             background: linear-gradient(to right, #fbbf24, #f59e0b);
@@ -54,7 +90,7 @@
 
         header p {
             color: #94a3b8;
-            font-size: 1rem;
+            font-size: 1.05rem;
         }
 
         /* Developer Badge Style */
@@ -92,93 +128,13 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 2rem;
-        }
-
-        @media (max-width: 900px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .card {
             background: var(--card-bg);
             border-radius: var(--radius);
             padding: 2rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .card h2 {
-            font-size: 1.4rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 0.75rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 90px;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 0.85rem;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .btn-submit:hover {
-            background: var(--accent-hover);
-        }
-
-        .btn-submit:active {
-            transform: scale(0.98);
         }
 
         .products-header {
@@ -186,15 +142,22 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.75rem;
+        }
+
+        .products-header h2 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1.25rem;
-            max-height: 700px;
-            overflow-y: auto;
-            padding-right: 4px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
         }
 
         .product-card {
@@ -213,15 +176,31 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
+        /* Container Gambar Responsif Ringan */
+        .image-wrapper {
+            width: 100%;
+            height: 180px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
         .product-img {
             width: 100%;
-            height: 150px;
-            object-fit: cover;
-            background: #f1f5f9;
+            height: 100%;
+            object-fit: cover; /* Menyesuaikan otomatis tanpa merusak aspek rasio */
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05);
         }
 
         .product-body {
-            padding: 1rem;
+            padding: 1.25rem;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
@@ -237,7 +216,7 @@
         }
 
         .product-title {
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--primary);
             margin-bottom: 0.5rem;
@@ -261,7 +240,7 @@
         }
 
         .product-price {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #059669;
         }
@@ -270,15 +249,15 @@
             background: #25d366;
             color: white;
             border: none;
-            padding: 0.4rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 0.5rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.4rem;
             transition: background 0.2s;
         }
 
@@ -289,12 +268,12 @@
         .empty-state {
             grid-column: 1 / -1;
             text-align: center;
-            padding: 3rem;
+            padding: 4rem 2rem;
             color: #64748b;
         }
 
         .empty-state i {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin-bottom: 1rem;
             color: #cbd5e1;
         }
@@ -304,8 +283,9 @@
 
     <div class="container">
         <header>
+            <a href="index.html" class="nav-admin-btn"><i class="fa-solid fa-house"></i> Halaman Utama</a>
             <h1><i class="fa-solid fa-store"></i> Pasar Candi Gebang Permai</h1>
-            <p>Etalase Digital Warga: Praktis, Mewah, dan Langsung Pesan via WhatsApp</p>
+            <p>Etalase Belanja Warga: Segar, Praktis, Langsung Antar ke Rumah</p>
             <div class="dev-badge-container">
                 <div class="dev-badge">
                     <span class="blinking-dot"></span>
@@ -314,57 +294,17 @@
             </div>
         </header>
 
-        <div class="main-grid">
-            <div class="card">
-                <h2><i class="fa-solid fa-circle-plus"></i> Tambah Lapak Baru</h2>
-                <form id="productForm">
-                    <div class="form-group">
-                        <label for="namaProduk">Nama Barang / Kuliner</label>
-                        <input type="text" id="namaProduk" class="form-control" placeholder="Contoh: Telur Ayam Negeri 1 Kg" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="kategori">Kategori</label>
-                        <select id="kategori" class="form-control" required>
-                            <option value="Sembako & Bahan Pokok">Sembako & Bahan Pokok</option>
-                            <option value="Kuliner / Masakan">Kuliner / Masakan</option>
-                            <option value="Frozen Food">Frozen Food</option>
-                            <option value="Fashion & Lainnya">Fashion & Lainnya</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="harga">Harga (Rp)</label>
-                        <input type="number" id="harga" class="form-control" placeholder="Contoh: 28000" required min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="gambar">Link Foto Barang (URL)</label>
-                        <input type="url" id="gambar" class="form-control" placeholder="https://example.com/foto.jpg" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="noWa">Nomor WhatsApp Penjual</label>
-                        <input type="tel" id="noWa" class="form-control" placeholder="Contoh: 628123456789" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="deskripsi">Deskripsi Singkat</label>
-                        <textarea id="deskripsi" class="form-control" placeholder="Kondisi fresh, siap antar area perumahan..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn-submit">
-                        <i class="fa-solid fa-paper-plane"></i> Terbitkan ke Etalase
-                    </button>
-                </form>
+        <div class="card">
+            <div class="products-header">
+                <h2><i class="fa-solid fa-basket-shopping"></i> Katalog Lapak Warga</h2>
             </div>
-
-            <div class="card">
-                <div class="products-header">
-                    <h2><i class="fa-solid fa-boxes-stacked"></i> Etalase Lapak Warga</h2>
-                </div>
-                <div id="productsContainer" class="products-grid">
-                    </div>
+            <div id="productsContainer" class="products-grid">
+                <!-- Produk dirender otomatis oleh JS -->
             </div>
         </div>
     </div>
 
     <script>
-        // Inisialisasi data awal (Mock Data) untuk demo
         const defaultProducts = [
             {
                 id: 1,
@@ -386,7 +326,6 @@
             }
         ];
 
-        // Fungsi aman untuk mengambil data dari localStorage dengan error handling & validasi
         function getProducts() {
             try {
                 const stored = localStorage.getItem('candi_gebang_lapak');
@@ -394,28 +333,17 @@
                 const parsed = JSON.parse(stored);
                 return Array.isArray(parsed) ? parsed : defaultProducts;
             } catch (error) {
-                console.error("Gagal membaca data dari LocalStorage:", error);
+                console.error("Gagal memuat data:", error);
                 return defaultProducts;
             }
         }
 
-        // Fungsi aman untuk menyimpan data ke localStorage
-        function saveProducts(products) {
-            try {
-                localStorage.setItem('candi_gebang_lapak', JSON.stringify(products));
-            } catch (error) {
-                console.error("Gagal menyimpan data:", error);
-            }
-        }
-
-        // Format angka ke format Rupiah
         function formatRupiah(number) {
             const num = Number(number);
             if (isNaN(num)) return "Rp 0";
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
         }
 
-        // Render Produk ke DOM
         function renderProducts() {
             const container = document.getElementById('productsContainer');
             if (!container) return;
@@ -427,29 +355,29 @@
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fa-solid fa-basket-shopping"></i>
-                        <p>Belum ada lapak yang dibuka. Yuk, tambahkan produk pertamamu!</p>
+                        <p>Belum ada produk yang dijual di lapak warga saat ini.</p>
                     </div>
                 `;
                 return;
             }
 
             products.forEach(item => {
-                // Validasi data null/undefined demi keamanan rendering
                 const name = item.nama || "Tanpa Nama";
                 const cat = item.kategori || "Lainnya";
                 const price = formatRupiah(item.harga);
-                const img = item.gambar || "https://via.placeholder.com/300x150?text=No+Image";
+                const img = item.gambar || "https://via.placeholder.com/300x180?text=No+Image";
                 const desc = item.deskripsi || "-";
                 const wa = item.noWa || "#";
                 
-                // Format pesan otomatis ke WhatsApp penjual
-                const waMessage = encodeURIComponent(`Halo, saya tertarik dengan produk *${name}* (${price}) yang ada di Etalase Candi Gebang Permai. Apakah masih tersedia?`);
+                const waMessage = encodeURIComponent(`Halo, saya tertarik memesan produk *${name}* (${price}) dari Etalase Candi Gebang Permai. Apakah masih tersedia?`);
                 const waLink = `https://wa.me/${wa}?text=${waMessage}`;
 
                 const cardEl = document.createElement('div');
                 cardEl.className = 'product-card';
                 cardEl.innerHTML = `
-                    <img src="${img}" alt="${name}" class="product-img" onerror="this.src='https://via.placeholder.com/300x150?text=Gagal+Muat+Gambar'">
+                    <div class="image-wrapper">
+                        <img src="${img}" alt="${name}" class="product-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Gambar+Gagal+Dimuat'">
+                    </div>
                     <div class="product-body">
                         <span class="product-category">${cat}</span>
                         <h3 class="product-title">${name}</h3>
@@ -457,7 +385,7 @@
                         <div class="product-footer">
                             <span class="product-price">${price}</span>
                             <a href="${waLink}" target="_blank" class="btn-wa">
-                                <i class="fa-brands fa-whatsapp"></i> Beli
+                                <i class="fa-brands fa-whatsapp"></i> Pesan
                             </a>
                         </div>
                     </div>
@@ -466,45 +394,10 @@
             });
         }
 
-        // Event Listener Form Submit
-        const productForm = document.getElementById('productForm');
-        if (productForm) {
-            productForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                // Ambil nilai input secara aman
-                const nama = document.getElementById('namaProduk').value.trim();
-                const kategori = document.getElementById('kategori').value;
-                const harga = Number(document.getElementById('harga').value);
-                const gambar = document.getElementById('gambar').value.trim();
-                const noWa = document.getElementById('noWa').value.trim();
-                const deskripsi = document.getElementById('deskripsi').value.trim();
-
-                // Validasi dasar
-                if (!nama || isNaN(harga) || !gambar || !noWa) {
-                    alert("Mohon lengkapi formulir dengan benar!");
-                    return;
-                }
-
-                const newProduct = {
-                    id: Date.now(),
-                    nama,
-                    kategori,
-                    harga,
-                    gambar,
-                    noWa,
-                    deskripsi
-                };
-
-                const products = getProducts();
-                products.unshift(newProduct); // Tambah di urutan paling atas
-                saveProducts(products);
-
-                // Reset form & perbarui tampilan
-                productForm.reset();
-                renderProducts();
-            });
-        }
+        document.addEventListener('DOMContentLoaded', renderProducts);
+    </script>
+</body>
+</html>
 
         // Jalankan render saat halaman pertama kali dimuat
         document.addEventListener('DOMContentLoaded', renderProducts);
