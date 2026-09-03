@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Lapak - Pasar Candi Gebang Permai</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #d97706;
+            --accent-hover: #b45309;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #334155;
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: #fff;
+            position: relative;
+        }
+
+        /* Tombol ke Halaman Utama */
+        .nav-home-btn {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .nav-home-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .nav-home-btn {
+                position: relative;
+                margin-bottom: 1rem;
+                display: inline-flex;
+            }
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        /* Developer Badge Style */
+        .dev-badge-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 0.75rem;
+        }
+
+        .dev-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            padding: 0.35rem 0.85rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: #e2e8f0;
+            backdrop-filter: blur(5px);
+        }
+
+        .blinking-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #22c55e;
+            animation: blink 1.5s infinite ease-in-out;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.9rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .alert-success {
+            display: none;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <a href="index.html" class="nav-home-btn"><i class="fa-solid fa-arrow-left"></i> Lihat Katalog</a>
+            <h1><i class="fa-solid fa-store"></i> Panel Penjual Lapak</h1>
+            <p>Formulir Input Dagangan Warga Perum Candi Gebang Permai</p>
+            <div class="dev-badge-container">
+                <div class="dev-badge">
+                    <span class="blinking-dot"></span>
+                    <span>developer : fatur62</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-circle-plus"></i> Tambah Produk / Kuliner Baru</h2>
+            <div id="successAlert" class="alert-success">
+                <i class="fa-solid fa-check-circle"></i> Produk berhasil diterbitkan ke etalase utama!
+            </div>
+            
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="namaProduk">Nama Barang / Makanan</label>
+                    <input type="text" id="namaProduk" class="form-control" placeholder="Contoh: Pecel Lele / Telur Omega 1 Kg" required>
+                </div>
+                <div class="form-group">
+                    <label for="kategori">Kategori</label>
+                    <select id="kategori" class="form-control" required>
+                        <option value="Sembako & Bahan Pokok">Sembako & Bahan Pokok</option>
+                        <option value="Kuliner / Masakan">Kuliner / Masakan</option>
+                        <option value="Frozen Food">Frozen Food</option>
+                        <option value="Fashion & Lainnya">Fashion & Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="harga">Harga (Rp)</label>
+                    <input type="number" id="harga" class="form-control" placeholder="Contoh: 25000" required min="0">
+                </div>
+                <div class="form-group">
+                    <label for="gambar">Link Foto / Gambar (URL)</label>
+                    <input type="url" id="gambar" class="form-control" placeholder="https://example.com/foto-makanan.jpg" required>
+                    <small style="color: #64748b; font-size: 0.75rem; margin-top: 0.25rem; display: block;">*Kolom gambar otomatis menyesuaikan proporsi ukuran secara ringan di perangkat pembeli.</small>
+                </div>
+                <div class="form-group">
+                    <label for="noWa">Nomor WhatsApp Penjual</label>
+                    <input type="tel" id="noWa" class="form-control" placeholder="Contoh: 628123456789 (Awali 62 tanpa 0)" required>
+                </div>
+                <div class="form-group">
+                    <label for="deskripsi">Deskripsi Singkat / Catatan</label>
+                    <textarea id="deskripsi" class="form-control" placeholder="Contoh: Masakan fresh dibuat pagi hari, siap kirim area blok." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-paper-plane"></i> Terbitkan Produk Sekarang
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const productForm = document.getElementById('productForm');
+        const successAlert = document.getElementById('successAlert');
+
+        function getProducts() {
+            try {
+                const stored = localStorage.getItem('candi_gebang_lapak');
+                return stored ? JSON.parse(stored) : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function saveProducts(products) {
+            try {
+                localStorage.setItem('candi_gebang_lapak', JSON.stringify(products));
+            } catch (error) {
+                console.error("Gagal menyimpan data:", error);
+            }
+        }
+
+        if (productForm) {
+            productForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const nama = document.getElementById('namaProduk').value.trim();
+                const kategori = document.getElementById('kategori').value;
+                const harga = Number(document.getElementById('harga').value);
+                const gambar = document.getElementById('gambar').value.trim();
+                const noWa = document.getElementById('noWa').value.trim();
+                const deskripsi = document.getElementById('deskripsi').value.trim();
+
+                if (!nama || isNaN(harga) || !gambar || !noWa) {
+                    alert("Mohon lengkapi formulir dengan benar!");
+                    return;
+                }
+
+                const newProduct = {
+                    id: Date.now(),
+                    nama,
+                    kategori,
+                    harga,
+                    gambar,
+                    noWa,
+                    deskripsi
+                };
+
+                const products = getProducts();
+                products.unshift(newProduct);
+                saveProducts(products);
+
+                // Tampilkan pesan sukses & reset form
+                successAlert.style.display = 'block';
+                productForm.reset();
+
+                setTimeout(() => {
+                    successAlert.style.display = 'none';
+                }, 4000);
+            });
+        }
+    </script>
+</body>
+</html>
