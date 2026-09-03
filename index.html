@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pasar Digital - Candi Gebang Permai</title>
+    <title>Gerbang Pasar Digital - Candi Gebang Permai</title>
     <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,7 +16,7 @@
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             --card-bg: rgba(255, 255, 255, 0.95);
             --text-main: #334155;
-            --radius: 16px;
+            --radius: 20px;
         }
 
         * {
@@ -30,67 +30,88 @@
             background: var(--bg-gradient);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 2rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 550px;
         }
 
-        header {
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2.5rem 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             text-align: center;
-            margin-bottom: 2.5rem;
-            color: #fff;
-            position: relative;
         }
 
-        /* Tombol Navigasi ke Halaman Penjual */
-        .nav-admin-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: rgba(217, 119, 6, 0.2);
-            border: 1px solid var(--accent);
-            color: #fbbf24;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
+        .icon-header {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
         }
 
-        .nav-admin-btn:hover {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        @media (max-width: 768px) {
-            .nav-admin-btn {
-                position: relative;
-                margin-top: 1rem;
-                display: inline-flex;
-            }
-        }
-
-        header h1 {
-            font-size: 2.4rem;
+        h1 {
+            font-size: 1.8rem;
             font-weight: 700;
+            color: var(--primary);
             margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #fbbf24, #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
-        header p {
-            color: #94a3b8;
-            font-size: 1.05rem;
+        p {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-buyer {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-buyer:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px -2px rgba(217, 119, 6, 0.3);
+        }
+
+        .btn-seller {
+            background: #ffffff;
+            color: var(--primary);
+            border: 2px solid #cbd5e1;
+        }
+
+        .btn-seller:hover {
+            background: #f8fafc;
+            border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
         /* Developer Badge Style */
@@ -98,20 +119,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 0.75rem;
+            margin-top: 2rem;
         }
 
         .dev-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(251, 191, 36, 0.3);
+            background: rgba(15, 23, 42, 0.05);
+            border: 1px solid rgba(217, 119, 6, 0.2);
             padding: 0.35rem 0.85rem;
             border-radius: 50px;
             font-size: 0.8rem;
-            color: #e2e8f0;
-            backdrop-filter: blur(5px);
+            color: #475569;
         }
 
         .blinking-dot {
@@ -127,272 +147,38 @@
             0%, 100% { opacity: 0.2; transform: scale(0.8); }
             50% { opacity: 1; transform: scale(1.2); }
         }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 2rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .products-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 0.75rem;
-        }
-
-        .products-header h2 {
-            font-size: 1.4rem;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .product-card {
-            background: #ffffff;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Container Gambar Responsif Ringan */
-        .image-wrapper {
-            width: 100%;
-            height: 180px;
-            background: #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .product-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Menyesuaikan otomatis tanpa merusak aspek rasio */
-            transition: transform 0.3s ease;
-        }
-
-        .product-card:hover .product-img {
-            transform: scale(1.05);
-        }
-
-        .product-body {
-            padding: 1.25rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .product-category {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 0.25rem;
-            letter-spacing: 0.5px;
-        }
-
-        .product-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .product-desc {
-            font-size: 0.85rem;
-            color: #64748b;
-            margin-bottom: 1rem;
-            flex-grow: 1;
-            line-height: 1.4;
-        }
-
-        .product-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #f1f5f9;
-            padding-top: 0.75rem;
-            margin-top: auto;
-        }
-
-        .product-price {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #059669;
-        }
-
-        .btn-wa {
-            background: #25d366;
-            color: white;
-            border: none;
-            padding: 0.5rem 0.85rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: background 0.2s;
-        }
-
-        .btn-wa:hover {
-            background: #22c55e;
-        }
-
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 4rem 2rem;
-            color: #64748b;
-        }
-
-        .empty-state i {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            color: #cbd5e1;
-        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header>
-            <a href="index.html" class="nav-admin-btn"><i class="fa-solid fa-house"></i> Halaman Utama</a>
-            <h1><i class="fa-solid fa-store"></i> Pasar Candi Gebang Permai</h1>
-            <p>Etalase Belanja Warga: Segar, Praktis, Langsung Antar ke Rumah</p>
+        <div class="card">
+            <div class="icon-header">
+                <i class="fa-solid fa-store"></i>
+            </div>
+            <h1>Pasar Candi Gebang Permai</h1>
+            <p>Pusat Etalase Digital Warga. Silakan pilih menu akses di bawah ini sesuai kebutuhan Anda.</p>
+
+            <div class="btn-group">
+                <a href="buyer.html" class="nav-btn btn-buyer">
+                    <i class="fa-solid fa-basket-shopping"></i> Halaman Utama (Pembeli)
+                </a>
+                <a href="admin.html" class="nav-btn btn-seller">
+                    <i class="fa-solid fa-circle-plus"></i> Halaman Penjual (Kelola Lapak)
+                </a>
+            </div>
+
             <div class="dev-badge-container">
                 <div class="dev-badge">
                     <span class="blinking-dot"></span>
                     <span>developer : fatur62</span>
                 </div>
             </div>
-        </header>
-
-        <div class="card">
-            <div class="products-header">
-                <h2><i class="fa-solid fa-basket-shopping"></i> Katalog Lapak Warga</h2>
-            </div>
-            <div id="productsContainer" class="products-grid">
-                <!-- Produk dirender otomatis oleh JS -->
-            </div>
         </div>
     </div>
 
-    <script>
-        const defaultProducts = [
-            {
-                id: 1,
-                nama: "Telur Ayam Negeri Segar",
-                kategori: "Sembako & Bahan Pokok",
-                harga: 28000,
-                gambar: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=500&q=80",
-                noWa: "628123456789",
-                deskripsi: "Kualitas super, bersih, langsung dari agen terpercaya Blok C."
-            },
-            {
-                id: 2,
-                nama: "Puding Lumut Vla Vanilla",
-                kategori: "Kuliner / Masakan",
-                harga: 15000,
-                gambar: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=500&q=80",
-                noWa: "628987654321",
-                deskripsi: "Manis pas, segar, cocok untuk hidangan keluarga sore hari."
-            }
-        ];
-
-        function getProducts() {
-            try {
-                const stored = localStorage.getItem('candi_gebang_lapak');
-                if (!stored) return defaultProducts;
-                const parsed = JSON.parse(stored);
-                return Array.isArray(parsed) ? parsed : defaultProducts;
-            } catch (error) {
-                console.error("Gagal memuat data:", error);
-                return defaultProducts;
-            }
-        }
-
-        function formatRupiah(number) {
-            const num = Number(number);
-            if (isNaN(num)) return "Rp 0";
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
-        }
-
-        function renderProducts() {
-            const container = document.getElementById('productsContainer');
-            if (!container) return;
-
-            const products = getProducts();
-            container.innerHTML = '';
-
-            if (products.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fa-solid fa-basket-shopping"></i>
-                        <p>Belum ada produk yang dijual di lapak warga saat ini.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            products.forEach(item => {
-                const name = item.nama || "Tanpa Nama";
-                const cat = item.kategori || "Lainnya";
-                const price = formatRupiah(item.harga);
-                const img = item.gambar || "https://via.placeholder.com/300x180?text=No+Image";
-                const desc = item.deskripsi || "-";
-                const wa = item.noWa || "#";
-                
-                const waMessage = encodeURIComponent(`Halo, saya tertarik memesan produk *${name}* (${price}) dari Etalase Candi Gebang Permai. Apakah masih tersedia?`);
-                const waLink = `https://wa.me/${wa}?text=${waMessage}`;
-
-                const cardEl = document.createElement('div');
-                cardEl.className = 'product-card';
-                cardEl.innerHTML = `
-                    <div class="image-wrapper">
-                        <img src="${img}" alt="${name}" class="product-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Gambar+Gagal+Dimuat'">
-                    </div>
-                    <div class="product-body">
-                        <span class="product-category">${cat}</span>
-                        <h3 class="product-title">${name}</h3>
-                        <p class="product-desc">${desc}</p>
-                        <div class="product-footer">
-                            <span class="product-price">${price}</span>
-                            <a href="${waLink}" target="_blank" class="btn-wa">
-                                <i class="fa-brands fa-whatsapp"></i> Pesan
-                            </a>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(cardEl);
-            });
-        }
+</body>
+</html>
 
         document.addEventListener('DOMContentLoaded', renderProducts);
     </script>
