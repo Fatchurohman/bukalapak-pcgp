@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog Belanja - Pasar Candi Gebang Permai</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Katalog Eksklusif - Pasar Candi Gebang Permai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Firebase App & Firestore CDN -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
         :root {
             --primary: #0f172a;
-            --accent: #d97706;
-            --accent-hover: #b45309;
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-main: #334155;
-            --radius: 16px;
+            --accent: #f59e0b;
+            --accent-hover: #d97706;
+            --bg-gradient: radial-gradient(circle at top right, #1e293b, #0f172a);
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --text-main: #1e293b;
+            --radius: 20px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -27,80 +26,96 @@
             background: var(--bg-gradient);
             color: var(--text-main);
             min-height: 100vh;
-            padding: 2rem 1rem;
+            padding: 2.5rem 1rem;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 2.5rem; color: #fff; position: relative; }
-
+        .container { max-width: 1280px; margin: 0 auto; }
+        
+        header { text-align: center; margin-bottom: 3rem; color: #fff; position: relative; }
         .nav-home-btn {
             position: absolute; top: 0; left: 0;
-            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
-            text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; backdrop-filter: blur(5px);
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff; padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
-        .nav-home-btn:hover { background: rgba(255, 255, 255, 0.2); }
-        @media (max-width: 768px) { .nav-home-btn { position: relative; margin-bottom: 1rem; } }
+        .nav-home-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+        @media (max-width: 768px) { .nav-home-btn { position: relative; margin-bottom: 1.5rem; } }
 
-        header h1 { font-size: 2.4rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        header p { color: #94a3b8; font-size: 1.05rem; }
+        header h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; }
+        header p { color: #94a3b8; font-size: 1.1rem; font-weight: 400; }
 
-        .dev-badge-container { display: flex; justify-content: center; align-items: center; margin-top: 0.75rem; }
+        .dev-badge-container { display: flex; justify-content: center; align-items: center; margin-top: 1rem; }
         .dev-badge {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(251, 191, 36, 0.3);
-            padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.8rem; color: #e2e8f0; backdrop-filter: blur(5px);
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(251, 191, 36, 0.3);
+            padding: 0.4rem 1rem; border-radius: 50px; font-size: 0.8rem; color: #e2e8f0; backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
         .blinking-dot {
             width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%;
-            box-shadow: 0 0 8px #22c55e; animation: blink 1.5s infinite ease-in-out;
+            box-shadow: 0 0 10px #22c55e; animation: blink 1.5s infinite ease-in-out;
         }
         @keyframes blink { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
 
-        .card {
-            background: var(--card-bg); border-radius: var(--radius); padding: 2rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        /* Filter Kategori Mewah */
+        .filter-container {
+            display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2.5rem;
+        }
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1; padding: 0.6rem 1.25rem; border-radius: 50px; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent); color: #0f172a; border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); transform: translateY(-2px);
         }
 
-        .products-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem;
+        .main-card {
+            background: var(--card-bg); border-radius: var(--radius); padding: 2.5rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
-        .products-header h2 { font-size: 1.4rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
 
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
 
         .product-card {
-            background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; flex-direction: column; position: relative;
         }
-        .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .product-card:hover { transform: translateY(-8px); box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.12); }
 
-        .image-wrapper { width: 100%; height: 180px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-        .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-        .product-card:hover .product-img { transform: scale(1.05); }
+        .image-wrapper { width: 100%; height: 200px; background: #f8fafc; position: relative; overflow: hidden; }
+        .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .product-card:hover .product-img { transform: scale(1.08); }
 
-        .product-body { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
-        .product-category { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent); margin-bottom: 0.25rem; }
-        .product-title { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; }
-        .product-desc { font-size: 0.85rem; color: #64748b; margin-bottom: 1rem; flex-grow: 1; line-height: 1.4; }
+        .seller-badge {
+            position: absolute; top: 12px; left: 12px; background: rgba(15, 23, 42, 0.85);
+            color: #f8fafc; padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.75rem;
+            font-weight: 700; backdrop-filter: blur(5px); display: flex; align-items: center; gap: 0.3rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
 
-        .product-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 0.75rem; margin-top: auto; }
-        .product-price { font-size: 1.1rem; font-weight: 700; color: #059669; }
+        .product-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .product-category { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #d97706; margin-bottom: 0.3rem; letter-spacing: 0.5px; }
+        .product-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; line-height: 1.4; }
+        .product-desc { font-size: 0.9rem; color: #64748b; margin-bottom: 1.25rem; flex-grow: 1; line-height: 1.5; }
+
+        .product-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: auto; }
+        .product-price { font-size: 1.2rem; font-weight: 800; color: #059669; }
 
         .btn-wa {
-            background: #25d366; color: white; border: none; padding: 0.5rem 0.85rem; border-radius: 8px;
-            font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; display: flex;
-            align-items: center; gap: 0.4rem; transition: background 0.2s;
+            background: #25d366; color: white; border: none; padding: 0.6rem 1rem; border-radius: 10px;
+            font-size: 0.85rem; font-weight: 700; cursor: pointer; text-decoration: none; display: flex;
+            align-items: center; gap: 0.5rem; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
         }
-        .btn-wa:hover { background: #22c55e; }
+        .btn-wa:hover { background: #22c55e; transform: scale(1.05); }
 
-        .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: #64748b; }
-        .empty-state i { font-size: 3.5rem; margin-bottom: 1rem; color: #cbd5e1; }
-        .loading-state { grid-column: 1 / -1; text-align: center; padding: 3rem; color: #64748b; font-weight: 500; }
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 5rem 2rem; color: #64748b; }
+        .empty-state i { font-size: 4rem; margin-bottom: 1rem; color: #cbd5e1; }
+        .loading-state { grid-column: 1 / -1; text-align: center; padding: 4rem; color: #64748b; font-weight: 600; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -108,7 +123,7 @@
         <header>
             <a href="index.html" class="nav-home-btn"><i class="fa-solid fa-arrow-left"></i> Beranda Utama</a>
             <h1><i class="fa-solid fa-store"></i> Pasar Candi Gebang Permai</h1>
-            <p>Etalase Belanja Warga: Segar, Praktis, Langsung Antar ke Rumah</p>
+            <p>Etalase Eksklusif Warga: Segar, Berkualitas, Langsung Antar ke Rumah</p>
             <div class="dev-badge-container">
                 <div class="dev-badge">
                     <span class="blinking-dot"></span>
@@ -117,22 +132,92 @@
             </div>
         </header>
 
-        <div class="card">
-            <div class="products-header">
-                <h2><i class="fa-solid fa-basket-shopping"></i> Katalog Lapak Warga</h2>
-            </div>
+        <!-- Filter Kategori -->
+        <div class="filter-container" id="filterContainer">
+            <button class="filter-btn active" data-category="Semua">Semua Produk</button>
+            <button class="filter-btn" data-category="Sembako & Bahan Pokok">Sembako</button>
+            <button class="filter-btn" data-category="Kuliner / Masakan">Kuliner</button>
+            <button class="filter-btn" data-category="Frozen Food">Frozen Food</button>
+            <button class="filter-btn" data-category="Fashion & Lainnya">Fashion & Lainnya</button>
+        </div>
+
+        <div class="main-card">
             <div id="productsContainer" class="products-grid">
-                <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Memuat data lapak terbaru...</div>
+                <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Memuat etalase mewah warga...</div>
             </div>
         </div>
     </div>
 
     <script src="config.js"></script>
     <script>
+        let allProducts = [];
+        let currentCategory = "Semua";
+
         function formatRupiah(number) {
             const num = Number(number);
             if (isNaN(num)) return "Rp 0";
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('productsContainer');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            const filtered = currentCategory === "Semua" 
+                ? allProducts 
+                : allProducts.filter(item => item.kategori === currentCategory);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <p>Belum ada produk dalam kategori ini.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const name = item.nama || "Tanpa Nama";
+                const cat = item.kategori || "Lainnya";
+                const seller = item.namaToko || "Warga Candi Gebang";
+                const price = formatRupiah(item.harga);
+                const img = item.gambar || "https://via.placeholder.com/300x200?text=No+Image";
+                const desc = item.deskripsi || "-";
+                
+                let cleanWa = (item.noWa || "").toString().trim().replace(/\D/g, '');
+                if (cleanWa.startsWith('0')) {
+                    cleanWa = '62' + cleanWa.slice(1);
+                } else if (!cleanWa.startsWith('62') && cleanWa.length > 0) {
+                    cleanWa = '62' + cleanWa;
+                }
+
+                const waMessage = encodeURIComponent(`Halo Kak/Bu, saya tertarik memesan produk *${name}* (${price}) dari lapak *${seller}* (Candi Gebang Permai). Apakah masih tersedia?`);
+                const waLink = cleanWa ? `https://wa.me/${cleanWa}?text=${waMessage}` : '#';
+
+                const cardEl = document.createElement('div');
+                cardEl.className = 'product-card';
+                cardEl.innerHTML = `
+                    <div class="image-wrapper">
+                        <div class="seller-badge"><i class="fa-solid fa-store"></i> ${seller}</div>
+                        <img src="${img}" alt="${name}" class="product-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Gambar+Gagal+Dimuat'">
+                    </div>
+                    <div class="product-body">
+                        <span class="product-category">${cat}</span>
+                        <h3 class="product-title">${name}</h3>
+                        <p class="product-desc">${desc}</p>
+                        <div class="product-footer">
+                            <span class="product-price">${price}</span>
+                            <a href="${waLink}" ${cleanWa ? 'target="_blank"' : 'onclick="alert(\'Nomor WhatsApp tidak valid.\'); return false;"'} class="btn-wa">
+                                <i class="fa-brands fa-whatsapp"></i> Pesan
+                            </a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(cardEl);
+            });
         }
 
         function loadProducts() {
@@ -150,28 +235,22 @@
             }
 
             db.collection('products').orderBy('createdAt', 'desc').onSnapshot(async (snapshot) => {
-                container.innerHTML = '';
-
                 if (snapshot.empty) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fa-solid fa-basket-shopping"></i>
-                            <p>Belum ada produk yang dijual di lapak warga saat ini.</p>
-                        </div>
-                    `;
+                    allProducts = [];
+                    renderProducts();
                     return;
                 }
 
                 const now = new Date().getTime();
-                const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000; // Batas waktu 10 hari dalam milidetik
-                let activeCount = 0;
+                const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
+                allProducts = [];
 
                 for (const doc of snapshot.docs) {
                     const item = doc.data();
                     const createdAt = item.createdAt ? item.createdAt.toDate().getTime() : now;
                     const age = now - createdAt;
 
-                    // Jika usia produk lebih dari 10 hari, hapus otomatis dari database Firebase & lewati tampilan
+                    // Auto-purge > 10 hari
                     if (age > TEN_DAYS_MS) {
                         try {
                             await db.collection('products').doc(doc.id).delete();
@@ -181,62 +260,29 @@
                         continue;
                     }
 
-                    activeCount++;
-                    const name = item.nama || "Tanpa Nama";
-                    const cat = item.kategori || "Lainnya";
-                    const price = formatRupiah(item.harga);
-                    const img = item.gambar || "https://via.placeholder.com/300x180?text=No+Image";
-                    const desc = item.deskripsi || "-";
-                    
-                    let cleanWa = (item.noWa || "").toString().trim().replace(/\D/g, '');
-                    if (cleanWa.startsWith('0')) {
-                        cleanWa = '62' + cleanWa.slice(1);
-                    } else if (!cleanWa.startsWith('62') && cleanWa.length > 0) {
-                        cleanWa = '62' + cleanWa;
-                    }
-
-                    const waMessage = encodeURIComponent(`Halo, saya tertarik memesan produk *${name}* (${price}) dari Etalase Candi Gebang Permai. Apakah masih tersedia?`);
-                    const waLink = cleanWa ? `https://wa.me/${cleanWa}?text=${waMessage}` : '#';
-
-                    const cardEl = document.createElement('div');
-                    cardEl.className = 'product-card';
-                    cardEl.innerHTML = `
-                        <div class="image-wrapper">
-                            <img src="${img}" alt="${name}" class="product-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Gambar+Gagal+Dimuat'">
-                        </div>
-                        <div class="product-body">
-                            <span class="product-category">${cat}</span>
-                            <h3 class="product-title">${name}</h3>
-                            <p class="product-desc">${desc}</p>
-                            <div class="product-footer">
-                                <span class="product-price">${price}</span>
-                                <a href="${waLink}" ${cleanWa ? 'target="_blank"' : 'onclick="alert(\'Nomor WhatsApp penjual tidak valid.\'); return false;"'} class="btn-wa">
-                                    <i class="fa-brands fa-whatsapp"></i> Pesan
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(cardEl);
+                    allProducts.push({ id: doc.id, ...item });
                 }
 
-                if (activeCount === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fa-solid fa-basket-shopping"></i>
-                            <p>Belum ada produk aktif atau semua produk sudah melewati batas masa tayang 10 hari.</p>
-                        </div>
-                    `;
-                }
+                renderProducts();
             }, (error) => {
                 console.error("Gagal memuat data:", error);
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fa-solid fa-triangle-exclamation"></i>
-                        <p>Gagal memuat data dari database Firebase.</p>
+                        <p>Gagal memuat data dari Firebase.</p>
                     </div>
                 `;
             });
         }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentCategory = e.target.getAttribute('data-category');
+                renderProducts();
+            });
+        });
 
         document.addEventListener('DOMContentLoaded', loadProducts);
     </script>
