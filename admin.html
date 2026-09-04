@@ -6,8 +6,9 @@
     <title>Kelola Lapak - Pasar Candi Gebang Permai</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Supabase CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Firebase App & Firestore CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
         :root {
@@ -107,7 +108,7 @@
         <div class="card">
             <h2><i class="fa-solid fa-circle-plus"></i> Tambah Produk / Kuliner Baru</h2>
             <div id="successAlert" class="alert-success">
-                <i class="fa-solid fa-check-circle"></i> Produk berhasil diterbitkan ke server pusat!
+                <i class="fa-solid fa-check-circle"></i> Produk berhasil diterbitkan ke Firebase Cloud!
             </div>
             
             <form id="productForm">
@@ -131,7 +132,7 @@
                 <div class="form-group">
                     <label for="fotoProduk">Ambil / Pilih Foto Produk dari HP</label>
                     <input type="file" id="fotoProduk" class="form-control" accept="image/*" required>
-                    <small style="color: #64748b; font-size: 0.75rem; margin-top: 0.25rem; display: block;">*Foto otomatis dikompres ringan dan dikirim ke server pusat.</small>
+                    <small style="color: #64748b; font-size: 0.75rem; margin-top: 0.25rem; display: block;">*Foto otomatis dikompres ringan sebelum dikirim ke server.</small>
                 </div>
                 <div class="form-group">
                     <label for="noWa">Nomor WhatsApp Penjual</label>
@@ -162,8 +163,8 @@
                 img.src = event.target.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 500;
-                    const MAX_HEIGHT = 500;
+                    const MAX_WIDTH = 450;
+                    const MAX_HEIGHT = 450;
                     let width = img.width;
                     let height = img.height;
 
@@ -184,7 +185,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
                     callback(dataUrl);
                 }
             }
@@ -206,25 +207,25 @@
                     return;
                 }
 
+                if (!db) {
+                    alert("Database Firebase belum terinisialisasi dengan benar. Periksa kembali config.js!");
+                    return;
+                }
+
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan ke Server...';
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan ke Firebase...';
 
                 compressImage(fileInput.files[0], async function(compressedImageBase64) {
                     try {
-                        const { error } = await supabase
-                            .from('products')
-                            .insert([
-                                {
-                                    nama: nama,
-                                    kategori: kategori,
-                                    harga: harga,
-                                    gambar: compressedImageBase64,
-                                    no_wa: noWa,
-                                    deskripsi: deskripsi
-                                }
-                            ]);
-
-                        if (error) throw error;
+                        await db.collection('products').add({
+                            nama: nama,
+                            kategori: kategori,
+                            harga: harga,
+                            gambar: compressedImageBase64,
+                            noWa: noWa,
+                            deskripsi: deskripsi,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
 
                         successAlert.style.display = 'block';
                         productForm.reset();
@@ -234,8 +235,8 @@
                         }, 4000);
 
                     } catch (err) {
-                        console.error("Gagal menyimpan ke database:", err);
-                        alert("Gagal menerbitkan produk ke server. Periksa koneksi internet atau konfigurasi Supabase Anda.");
+                        console.error("Gagal menyimpan ke Firebase:", err);
+                        alert("Gagal menerbitkan produk ke Firebase. Periksa koneksi atau konfigurasi database Anda.");
                     } finally {
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Terbitkan Produk Sekarang';
