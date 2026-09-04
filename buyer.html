@@ -75,7 +75,7 @@
         .product-card {
             background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; position: relative;
         }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
 
@@ -149,7 +149,7 @@
                 return;
             }
 
-            db.collection('products').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+            db.collection('products').orderBy('createdAt', 'desc').onSnapshot(async (snapshot) => {
                 container.innerHTML = '';
 
                 if (snapshot.empty) {
@@ -162,8 +162,26 @@
                     return;
                 }
 
-                snapshot.forEach(doc => {
+                const now = new Date().getTime();
+                const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000; // Batas waktu 10 hari dalam milidetik
+                let activeCount = 0;
+
+                for (const doc of snapshot.docs) {
                     const item = doc.data();
+                    const createdAt = item.createdAt ? item.createdAt.toDate().getTime() : now;
+                    const age = now - createdAt;
+
+                    // Jika usia produk lebih dari 10 hari, hapus otomatis dari database Firebase & lewati tampilan
+                    if (age > TEN_DAYS_MS) {
+                        try {
+                            await db.collection('products').doc(doc.id).delete();
+                        } catch (e) {
+                            console.error("Gagal menghapus produk kedaluwarsa:", e);
+                        }
+                        continue;
+                    }
+
+                    activeCount++;
                     const name = item.nama || "Tanpa Nama";
                     const cat = item.kategori || "Lainnya";
                     const price = formatRupiah(item.harga);
@@ -199,13 +217,22 @@
                         </div>
                     `;
                     container.appendChild(cardEl);
-                });
+                }
+
+                if (activeCount === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                            <p>Belum ada produk aktif atau semua produk sudah melewati batas masa tayang 10 hari.</p>
+                        </div>
+                    `;
+                }
             }, (error) => {
                 console.error("Gagal memuat data:", error);
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fa-solid fa-triangle-exclamation"></i>
-                        <p>Gagal memuat data dari database Firebase. Pastikan aturan keamanan Firestore mengizinkan baca/tulis (Test Mode).</p>
+                        <p>Gagal memuat data dari database Firebase.</p>
                     </div>
                 `;
             });
