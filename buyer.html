@@ -118,12 +118,20 @@
         .seller-badge {
             position: absolute; top: 12px; left: 12px; background: rgba(9, 13, 22, 0.88);
             color: #fbbf24; padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.75rem;
-            font-weight: 700; backdrop-filter: blur(5px); display: flex; align-items: center; gap: 0.3rem;
+            font-weight: 700; backdrop-filter: blur(5px); display: flex; align-items: center; gap: 0.4rem;
             border: 1px solid rgba(245, 158, 11, 0.4); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .product-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
-        .product-category { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #b45309; margin-bottom: 0.3rem; letter-spacing: 0.5px; }
+        
+        /* Informasi Toko / Penjual di dalam bodi kartu */
+        .store-info {
+            display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 700;
+            color: #d97706; background: #fef3c7; padding: 0.35rem 0.75rem; border-radius: 8px;
+            margin-bottom: 0.75rem; border: 1px solid #fde68a;
+        }
+
+        .product-category { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #64748b; margin-bottom: 0.3rem; letter-spacing: 0.5px; }
         .product-title { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; line-height: 1.4; }
         .product-desc { font-size: 0.9rem; color: #64748b; margin-bottom: 1.25rem; flex-grow: 1; line-height: 1.5; }
 
@@ -242,10 +250,13 @@
                 cardEl.className = 'product-card';
                 cardEl.innerHTML = `
                     <div class="image-wrapper">
-                        <div class="seller-badge"><i class="fa-solid fa-crown" style="color:#fbbf24;"></i> ${seller}</div>
+                        <div class="seller-badge"><i class="fa-solid fa-store" style="color:#fbbf24;"></i> ${seller}</div>
                         <img src="${img}" alt="${name}" class="product-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Gambar+Gagal+Dimuat'">
                     </div>
                     <div class="product-body">
+                        <div class="store-info">
+                            <i class="fa-solid fa-shop"></i> Toko: <strong>${seller}</strong>
+                        </div>
                         <span class="product-category">${cat}</span>
                         <h3 class="product-title">${name}</h3>
                         <p class="product-desc">${desc}</p>
