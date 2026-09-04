@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kontrol Admin - Pasar Candi Gebang Permai</title>
+    <title>Kontrol Admin Rahasia - Pasar Candi Gebang Permai</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -26,11 +26,33 @@
             color: var(--text-main);
             min-height: 100vh;
             padding: 2rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .container { max-width: 900px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 2.5rem; color: #fff; position: relative; }
+        /* Kotak Login PIN */
+        #pinContainer {
+            width: 100%; max-width: 400px;
+            background: var(--card-bg); padding: 2.5rem; border-radius: var(--radius);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25); text-align: center;
+        }
+        #pinContainer h2 { color: var(--primary); margin-bottom: 0.5rem; font-size: 1.5rem; }
+        #pinContainer p { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .pin-input {
+            width: 100%; padding: 0.85rem; font-size: 1.2rem; text-align: center;
+            letter-spacing: 0.3rem; border: 1px solid #cbd5e1; border-radius: 10px; outline: none; margin-bottom: 1rem;
+        }
+        .btn-pin {
+            width: 100%; background: var(--accent); color: white; border: none; padding: 0.85rem;
+            border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;
+        }
+        .btn-pin:hover { background: #b45309; }
 
+        /* Panel Kontrol Utama (Disembunyikan Sebelum Masukkan PIN) */
+        #controlPanel { display: none; width: 100%; max-width: 900px; margin: 0 auto; }
+        
+        header { text-align: center; margin-bottom: 2rem; color: #fff; position: relative; }
         .nav-home-btn {
             position: absolute; top: 0; left: 0;
             background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
@@ -76,30 +98,43 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <a href="admin.html" class="nav-home-btn"><i class="fa-solid fa-arrow-left"></i> Kembali ke Form</a>
-            <h1><i class="fa-solid fa-sliders"></i> Kontrol Admin Lapak</h1>
-            <p>Kelola, Edit, atau Hapus Seluruh Data Produk Warga</p>
-        </header>
 
-        <div class="card">
-            <h2>Daftar Seluruh Produk Aktif</h2>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Toko</th>
-                            <th>Produk</th>
-                            <th>Kategori</th>
-                            <th>Harga</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminTableBody">
-                        <tr><td colspan="5" style="text-align: center; padding: 2rem;">Memuat data...</td></tr>
-                    </tbody>
-                </table>
+    <!-- Kotak Verifikasi PIN Rahasia -->
+    <div id="pinContainer">
+        <h2><i class="fa-solid fa-lock" style="color: var(--accent);"></i> Akses Terbatas</h2>
+        <p>Masukkan PIN Rahasia Pengurus / Admin untuk membuka panel kontrol.</p>
+        <input type="password" id="pinInput" class="pin-input" placeholder="••••" maxlength="6">
+        <button type="button" class="btn-pin" onclick="verifyPin()">Buka Panel</button>
+        <p style="margin-top: 1.5rem; font-size: 0.8rem;"><a href="index.html" style="color: #64748b; text-decoration: none;"><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</a></p>
+    </div>
+
+    <!-- Panel Kontrol Utama -->
+    <div id="controlPanel">
+        <div class="container">
+            <header>
+                <a href="admin.html" class="nav-home-btn"><i class="fa-solid fa-arrow-left"></i> Kembali ke Form</a>
+                <h1><i class="fa-solid fa-sliders"></i> Kontrol Admin Rahasia</h1>
+                <p>Kelola, Edit, atau Hapus Seluruh Data Produk Warga</p>
+            </header>
+
+            <div class="card">
+                <h2>Daftar Seluruh Produk Aktif</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Toko</th>
+                                <th>Produk</th>
+                                <th>Kategori</th>
+                                <th>Harga</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody">
+                            <tr><td colspan="5" style="text-align: center; padding: 2rem;">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -149,6 +184,21 @@
 
     <script src="config.js"></script>
     <script>
+        // ATUR PIN RAHASIA ADMIN ANDA DI SINI (Contoh: 6262)
+        const ADMIN_PIN = "6262";
+
+        function verifyPin() {
+            const enteredPin = document.getElementById('pinInput').value.trim();
+            if (enteredPin === ADMIN_PIN) {
+                document.getElementById('pinContainer').style.display = 'none';
+                document.getElementById('controlPanel').style.display = 'block';
+                loadAdminData();
+            } else {
+                alert("PIN Rahasia Salah! Akses ditolak.");
+                document.getElementById('pinInput').value = '';
+            }
+        }
+
         const tableBody = document.getElementById('adminTableBody');
         const editModal = document.getElementById('editModal');
         const editForm = document.getElementById('editForm');
@@ -229,8 +279,6 @@
                 }
             }
         }
-
-        document.addEventListener('DOMContentLoaded', loadAdminData);
     </script>
 </body>
 </html>
