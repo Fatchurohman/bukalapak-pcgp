@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Lapak - Pasar Candi Gebang Permai</title>
+    <title>Panel Penjual - Pasar Candi Gebang Permai</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Firebase App & Firestore CDN -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
@@ -62,10 +61,11 @@
             background: var(--card-bg); border-radius: var(--radius); padding: 2.5rem;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
         }
         .card h2 {
             font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--primary);
-            display: flex; align-items: center; gap: 0.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem;
+            display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem;
         }
 
         .form-group { margin-bottom: 1.25rem; }
@@ -85,10 +85,34 @@
         }
         .btn-submit:hover { background: var(--accent-hover); }
 
+        .btn-control-link {
+            display: block; text-align: center; margin-top: 1rem; background: #0f172a; color: #fff;
+            padding: 0.8rem; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .btn-control-link:hover { background: #1e293b; }
+
         .alert-success {
             display: none; background: #d1fae5; color: #065f46; padding: 0.75rem; border-radius: 8px;
             font-size: 0.9rem; margin-bottom: 1.25rem; text-align: center; font-weight: 600;
         }
+
+        /* Modal Preview */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000;
+            align-items: center; justify-content: center; padding: 1rem;
+        }
+        .modal-card {
+            background: #fff; width: 100%; max-width: 450px; border-radius: 16px; padding: 2rem;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25); text-align: center;
+        }
+        .modal-card h3 { color: var(--primary); margin-bottom: 1rem; font-size: 1.3rem; }
+        .modal-preview-img { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; margin-bottom: 1rem; }
+        .modal-btn-group { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .btn-modal { flex: 1; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; }
+        .btn-edit { background: #e2e8f0; color: #334155; }
+        .btn-confirm { background: #059669; color: #fff; }
     </style>
 </head>
 <body>
@@ -106,12 +130,19 @@
         </header>
 
         <div class="card">
-            <h2><i class="fa-solid fa-circle-plus"></i> Tambah Produk / Kuliner Baru</h2>
+            <h2>
+                <span><i class="fa-solid fa-circle-plus"></i> Tambah Produk Baru</span>
+                <a href="buyer.html" style="font-size: 0.85rem; color: var(--accent); text-decoration: none;"><i class="fa-solid fa-eye"></i> Lihat Katalog</a>
+            </h2>
             <div id="successAlert" class="alert-success">
-                <i class="fa-solid fa-check-circle"></i> Produk berhasil diterbitkan ke Firebase Cloud!
+                <i class="fa-solid fa-check-circle"></i> Produk berhasil diterbitkan!
             </div>
             
             <form id="productForm">
+                <div class="form-group">
+                    <label for="namaToko">Nama Toko / Nama Penjual (Ibu/Bapak)</label>
+                    <input type="text" id="namaToko" class="form-control" placeholder="Contoh: Bu Siti Blk E-4 / Toko Berkah" required>
+                </div>
                 <div class="form-group">
                     <label for="namaProduk">Nama Barang / Makanan</label>
                     <input type="text" id="namaProduk" class="form-control" placeholder="Contoh: Telur Omega 1 Kg / Pecel Lele" required>
@@ -132,20 +163,37 @@
                 <div class="form-group">
                     <label for="fotoProduk">Ambil / Pilih Foto Produk dari HP</label>
                     <input type="file" id="fotoProduk" class="form-control" accept="image/*" required>
-                    <small style="color: #64748b; font-size: 0.75rem; margin-top: 0.25rem; display: block;">*Foto otomatis dikompres ringan sebelum dikirim ke server.</small>
+                    <small style="color: #64748b; font-size: 0.75rem; margin-top: 0.25rem; display: block;">*Foto otomatis dikompres ringan sebelum dikirim.</small>
                 </div>
                 <div class="form-group">
                     <label for="noWa">Nomor WhatsApp Penjual</label>
-                    <input type="tel" id="noWa" class="form-control" placeholder="Contoh: 08123456789 atau 628123456789" required>
+                    <input type="tel" id="noWa" class="form-control" placeholder="Contoh: 08123456789" required>
                 </div>
                 <div class="form-group">
                     <label for="deskripsi">Deskripsi Singkat / Catatan</label>
                     <textarea id="deskripsi" class="form-control" placeholder="Contoh: Dibuat segar pagi hari, siap kirim area perumahan..." required></textarea>
                 </div>
-                <button type="submit" id="submitBtn" class="btn-submit">
-                    <i class="fa-solid fa-paper-plane"></i> Terbitkan Produk Sekarang
+                <button type="button" id="previewBtn" class="btn-submit">
+                    <i class="fa-solid fa-eye"></i> Preview & Periksa Data
                 </button>
             </form>
+            
+            <a href="admin_kontrol.html" class="btn-control-link">
+                <i class="fa-solid fa-sliders"></i> Buka Halaman Kontrol Admin (Edit/Hapus Semua Data)
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal Preview -->
+    <div id="previewModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3>Preview Data Sebelum Terbit</h3>
+            <img id="previewImg" class="modal-preview-img" src="" alt="Preview">
+            <p id="previewText" style="text-align: left; font-size: 0.9rem; color: #475569; line-height: 1.5; margin-bottom: 1rem;"></p>
+            <div class="modal-btn-group">
+                <button type="button" class="btn-modal btn-edit" id="modalEditBtn">Edit Kembali</button>
+                <button type="button" class="btn-modal btn-confirm" id="modalConfirmBtn">Terbitkan Sekarang</button>
+            </div>
         </div>
     </div>
 
@@ -153,7 +201,15 @@
     <script>
         const productForm = document.getElementById('productForm');
         const successAlert = document.getElementById('successAlert');
-        const submitBtn = document.getElementById('submitBtn');
+        const previewBtn = document.getElementById('previewBtn');
+        const previewModal = document.getElementById('previewModal');
+        const modalEditBtn = document.getElementById('modalEditBtn');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+        const previewImg = document.getElementById('previewImg');
+        const previewText = document.getElementById('previewText');
+
+        let compressedImageCache = "";
+        let formDataCache = {};
 
         function compressImage(file, callback) {
             const reader = new FileReader();
@@ -169,81 +225,82 @@
                     let height = img.height;
 
                     if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
                     } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
                     }
 
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
-                    callback(dataUrl);
+                    callback(canvas.toDataURL('image/jpeg', 0.5));
                 }
             }
         }
 
-        if (productForm) {
-            productForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
+        previewBtn.addEventListener('click', function() {
+            const namaToko = document.getElementById('namaToko').value.trim();
+            const nama = document.getElementById('namaProduk').value.trim();
+            const kategori = document.getElementById('kategori').value;
+            const harga = document.getElementById('harga').value.trim();
+            const fileInput = document.getElementById('fotoProduk');
+            const noWa = document.getElementById('noWa').value.trim();
+            const deskripsi = document.getElementById('deskripsi').value.trim();
 
-                const nama = document.getElementById('namaProduk').value.trim();
-                const kategori = document.getElementById('kategori').value;
-                const harga = Number(document.getElementById('harga').value);
-                const fileInput = document.getElementById('fotoProduk');
-                const noWa = document.getElementById('noWa').value.trim();
-                const deskripsi = document.getElementById('deskripsi').value.trim();
+            if (!namaToko || !nama || !harga || !fileInput.files[0] || !noWa || !deskripsi) {
+                alert("Mohon lengkapi seluruh formulir dengan benar!");
+                return;
+            }
 
-                if (!nama || isNaN(harga) || !fileInput.files[0] || !noWa) {
-                    alert("Mohon lengkapi formulir dengan benar!");
-                    return;
-                }
+            previewBtn.disabled = true;
+            previewBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyiapkan Preview...';
 
-                if (!db) {
-                    alert("Database Firebase belum terinisialisasi dengan benar. Periksa kembali config.js!");
-                    return;
-                }
+            compressImage(fileInput.files[0], function(base64) {
+                compressedImageCache = base64;
+                formDataCache = { namaToko, nama, kategori, harga: Number(harga), gambar: base64, noWa, deskripsi };
 
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan ke Firebase...';
-
-                compressImage(fileInput.files[0], async function(compressedImageBase64) {
-                    try {
-                        await db.collection('products').add({
-                            nama: nama,
-                            kategori: kategori,
-                            harga: harga,
-                            gambar: compressedImageBase64,
-                            noWa: noWa,
-                            deskripsi: deskripsi,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-
-                        successAlert.style.display = 'block';
-                        productForm.reset();
-
-                        setTimeout(() => {
-                            successAlert.style.display = 'none';
-                        }, 4000);
-
-                    } catch (err) {
-                        console.error("Gagal menyimpan ke Firebase:", err);
-                        alert("Gagal menerbitkan produk ke Firebase. Periksa koneksi atau konfigurasi database Anda.");
-                    } finally {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Terbitkan Produk Sekarang';
-                    }
-                });
+                previewImg.src = base64;
+                previewText.innerHTML = `<strong>Toko:</strong> ${namaToko}<br><strong>Produk:</strong> ${nama}<br><strong>Kategori:</strong> ${kategori}<br><strong>Harga:</strong> Rp ${Number(harga).toLocaleString('id-ID')}<br><strong>WA:</strong> ${noWa}`;
+                
+                previewBtn.disabled = false;
+                previewBtn.innerHTML = '<i class="fa-solid fa-eye"></i> Preview & Periksa Data';
+                previewModal.style.display = 'flex';
             });
-        }
+        });
+
+        modalEditBtn.addEventListener('click', function() {
+            previewModal.style.display = 'none';
+        });
+
+        modalConfirmBtn.addEventListener('click', async function() {
+            previewModal.style.display = 'none';
+            modalConfirmBtn.disabled = true;
+            modalConfirmBtn.innerHTML = 'Menyimpan...';
+
+            try {
+                if (!db) {
+                    alert("Database belum terhubung!");
+                    return;
+                }
+
+                await db.collection('products').add({
+                    ...formDataCache,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                successAlert.style.display = 'block';
+                productForm.reset();
+
+                setTimeout(() => { successAlert.style.display = 'none'; }, 4000);
+            } catch (err) {
+                console.error("Gagal simpan:", err);
+                alert("Gagal menerbitkan produk ke database.");
+            } finally {
+                modalConfirmBtn.disabled = false;
+                modalConfirmBtn.innerHTML = 'Terbitkan Sekarang';
+            }
+        });
     </script>
 </body>
 </html>
