@@ -3,215 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Penjual - Pasar Candi Gebang Permai</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Input Lapak Warga - Pasar Candi Gebang Permai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
         :root {
-            --primary: #0f172a;
-            --accent: #d97706;
-            --accent-hover: #b45309;
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-main: #334155;
-            --radius: 16px;
+            --primary: #090d16;
+            --gold-primary: #f59e0b;
+            --gold-light: #fef3c7;
+            --gold-dark: #b45309;
+            --gold-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #b45309 100%);
+            --bg-gradient: radial-gradient(circle at top, #1e293b 0%, #090d16 100%);
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --radius: 20px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
             background: var(--bg-gradient);
-            color: var(--text-main);
+            color: #f8fafc;
             min-height: 100vh;
-            padding: 2rem 1rem;
+            padding: 2.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .container { max-width: 700px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 2.5rem; color: #fff; position: relative; }
-
-        .nav-home-btn {
-            position: absolute; top: 0; left: 0;
-            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
-            text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; backdrop-filter: blur(5px);
+        .container { width: 100%; max-width: 650px; margin: 0 auto; }
+        
+        header { text-align: center; margin-bottom: 2rem; position: relative; }
+        .nav-btns {
+            position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between;
+        }
+        .nav-btn {
+            background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fbbf24; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
-        .nav-home-btn:hover { background: rgba(255, 255, 255, 0.2); }
-        @media (max-width: 768px) { .nav-home-btn { position: relative; margin-bottom: 1rem; } }
-
-        header h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        header p { color: #94a3b8; font-size: 1rem; }
-
-        .dev-badge-container { display: flex; justify-content: center; align-items: center; margin-top: 0.75rem; }
-        .dev-badge {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(251, 191, 36, 0.3);
-            padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.8rem; color: #e2e8f0; backdrop-filter: blur(5px);
+        .nav-btn:hover { background: rgba(245, 158, 11, 0.25); transform: translateY(-2px); }
+        @media (max-width: 640px) { 
+            .nav-btns { position: relative; margin-bottom: 1.5rem; justify-content: center; gap: 0.5rem; } 
         }
-        .blinking-dot {
-            width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%;
-            box-shadow: 0 0 8px #22c55e; animation: blink 1.5s infinite ease-in-out;
+
+        header h1 { 
+            font-size: 2.2rem; font-weight: 800; margin-bottom: 0.4rem; 
+            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
         }
-        @keyframes blink { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+        header p { color: #cbd5e1; font-size: 0.95rem; }
 
         .card {
             background: var(--card-bg); border-radius: var(--radius); padding: 2.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 2rem;
-        }
-        .card h2 {
-            font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--primary);
-            display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
         .form-group { margin-bottom: 1.25rem; }
-        .form-group label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--primary); }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: #fbbf24; }
         .form-control {
-            width: 100%; padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 10px;
-            font-size: 0.95rem; transition: all 0.3s ease; outline: none; background: #fff;
+            width: 100%; padding: 0.75rem 1rem; background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; font-size: 0.95rem; color: #fff;
+            outline: none; transition: all 0.3s ease;
         }
-        .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15); }
-        textarea.form-control { resize: vertical; min-height: 100px; }
+        .form-control:focus { border-color: #fbbf24; box-shadow: 0 0 15px rgba(245, 158, 11, 0.25); background: rgba(255, 255, 255, 0.12); }
+        
+        select.form-control option { background: #0f172a; color: #fff; }
 
         .btn-submit {
-            width: 100%; background: var(--accent); color: white; border: none; padding: 0.9rem;
-            border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer;
-            transition: background 0.3s ease, transform 0.1s ease; display: flex; align-items: center; justify-content: center;
-            gap: 0.5rem; margin-top: 1rem;
+            width: 100%; background: var(--gold-gradient); color: #090d16; border: none; padding: 0.9rem;
+            border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; margin-top: 1.5rem;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4); transition: all 0.3s ease;
         }
-        .btn-submit:hover { background: var(--accent-hover); }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(245, 158, 11, 0.6); }
 
-        .btn-control-link {
-            display: block; text-align: center; margin-top: 1rem; background: #0f172a; color: #fff;
-            padding: 0.8rem; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.9rem;
-            transition: background 0.2s;
-        }
-        .btn-control-link:hover { background: #1e293b; }
-
-        .alert-success {
-            display: none; background: #d1fae5; color: #065f46; padding: 0.75rem; border-radius: 8px;
-            font-size: 0.9rem; margin-bottom: 1.25rem; text-align: center; font-weight: 600;
-        }
-
-        /* Modal Preview */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000;
-            align-items: center; justify-content: center; padding: 1rem;
-        }
-        .modal-card {
-            background: #fff; width: 100%; max-width: 450px; border-radius: 16px; padding: 2rem;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.25); text-align: center;
-        }
-        .modal-card h3 { color: var(--primary); margin-bottom: 1rem; font-size: 1.3rem; }
-        .modal-preview-img { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; margin-bottom: 1rem; }
-        .modal-btn-group { display: flex; gap: 1rem; margin-top: 1.5rem; }
-        .btn-modal { flex: 1; padding: 0.75rem; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; }
-        .btn-edit { background: #e2e8f0; color: #334155; }
-        .btn-confirm { background: #059669; color: #fff; }
+        .helper-text { font-size: 0.75rem; color: #94a3b8; margin-top: 0.3rem; display: block; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <a href="index.html" class="nav-home-btn"><i class="fa-solid fa-arrow-left"></i> Beranda Utama</a>
-            <h1><i class="fa-solid fa-store"></i> Panel Penjual Lapak</h1>
-            <p>Formulir Input Dagangan Warga Perum Candi Gebang Permai</p>
-            <div class="dev-badge-container">
-                <div class="dev-badge">
-                    <span class="blinking-dot"></span>
-                    <span>developer : fatur62</span>
-                </div>
+            <div class="nav-btns">
+                <a href="buyer.html" class="nav-btn"><i class="fa-solid fa-store"></i> Lihat Katalog</a>
+                <a href="admin_kontrol.html" class="nav-btn"><i class="fa-solid fa-sliders"></i> Kontrol Admin</a>
             </div>
+            <h1><i class="fa-solid fa-circle-plus" style="color: #fbbf24;"></i> Tambah Produk Warga</h1>
+            <p>Daftarkan produk atau kuliner andalan Anda untuk dipasarkan ke warga perumahan.</p>
         </header>
 
         <div class="card">
-            <h2>
-                <span><i class="fa-solid fa-circle-plus"></i> Tambah Produk Baru</span>
-                <a href="buyer.html" style="font-size: 0.85rem; color: var(--accent); text-decoration: none;"><i class="fa-solid fa-eye"></i> Lihat Katalog</a>
-            </h2>
-            <div id="successAlert" class="alert-success">
-                <i class="fa-solid fa-check-circle"></i> Produk berhasil diterbitkan!
-            </div>
-            
             <form id="productForm">
                 <div class="form-group">
-                    <label for="namaToko">Nama Toko / Nama Penjual (Ibu/Bapak)</label>
-                    <input type="text" id="namaToko" class="form-control" placeholder="Contoh: Bu Siti Blk E-4 / Toko Berkah" required>
+                    <label><i class="fa-solid fa-shop"></i> Nama Toko / Pemilik Lapak</label>
+                    <input type="text" id="namaToko" class="form-control" placeholder="Contoh: Toko Bu Siti / Dapur Bu Rini" required>
                 </div>
+
                 <div class="form-group">
-                    <label for="namaProduk">Nama Barang / Makanan</label>
-                    <input type="text" id="namaProduk" class="form-control" placeholder="Contoh: Telur Omega 1 Kg / Pecel Lele" required>
+                    <label><i class="fa-solid fa-box"></i> Nama Produk / Dagangan</label>
+                    <input type="text" id="nama" class="form-control" placeholder="Contoh: Beras Ramos 5kg / Ayam Goreng Lengkuas" required>
                 </div>
+
                 <div class="form-group">
-                    <label for="kategori">Kategori</label>
+                    <label><i class="fa-solid fa-tags"></i> Kategori Produk</label>
                     <select id="kategori" class="form-control" required>
+                        <option value="" disabled selected>-- Pilih Kategori --</option>
                         <option value="Sembako & Bahan Pokok">Sembako & Bahan Pokok</option>
                         <option value="Kuliner / Masakan">Kuliner / Masakan</option>
                         <option value="Frozen Food">Frozen Food</option>
                         <option value="Fashion & Lainnya">Fashion & Lainnya</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="harga">Harga (Rp)</label>
-                    <input type="text" id="harga" class="form-control" placeholder="Contoh: 15.000" inputmode="numeric" required>
 
-                </div>
                 <div class="form-group">
-                    <label for="fotoProduk">Ambil / Pilih Foto Produk dari HP</label>
+                    <label><i class="fa-solid fa-money-bill-wave"></i> Harga (Rp)</label>
+                    <input type="text" id="harga" class="form-control" placeholder="Contoh: 15.000" inputmode="numeric" required>
+                    <small class="helper-text">Ketik angka saja, titik pemisah ribuan akan muncul otomatis.</small>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fa-solid fa-image"></i> Foto Produk</label>
                     <input type="file" id="fotoProduk" class="form-control" accept="image/*" required>
-                    <small style="color: #64748b; font-size: 0.75rem; margin-top: 0.25rem; display: block;">*Foto otomatis dikompres ringan sebelum dikirim.</small>
+                    <small class="helper-text">Pilih foto produk terbaik Anda dari galeri HP.</small>
                 </div>
+
                 <div class="form-group">
-                    <label for="noWa">Nomor WhatsApp Penjual</label>
-                    <input type="tel" id="noWa" class="form-control" placeholder="Contoh: 08123456789" required>
+                    <label><i class="fa-brands fa-whatsapp"></i> Nomor WhatsApp (Untuk Pemesanan)</label>
+                    <input type="text" id="noWa" class="form-control" placeholder="Contoh: 081234567890" required>
+                    <small class="helper-text">Pastikan nomor aktif agar pembeli bisa langsung menghubungi via WhatsApp.</small>
                 </div>
+
                 <div class="form-group">
-                    <label for="deskripsi">Deskripsi Singkat / Catatan</label>
-                    <textarea id="deskripsi" class="form-control" placeholder="Contoh: Dibuat segar pagi hari, siap kirim area perumahan..." required></textarea>
+                    <label><i class="fa-solid fa-pen-to-square"></i> Deskripsi Singkat</label>
+                    <textarea id="deskripsi" class="form-control" rows="3" placeholder="Jelaskan detail produk, ukuran, atau ketentuan pemesanan..." required></textarea>
                 </div>
-                <button type="button" id="previewBtn" class="btn-submit">
-                    <i class="fa-solid fa-eye"></i> Preview & Periksa Data
+
+                <button type="submit" id="btnSubmit" class="btn-submit">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Terbitkan Produk Sekarang
                 </button>
             </form>
-            
-            <a href="admin_kontrol.html" class="btn-control-link">
-                <i class="fa-solid fa-sliders"></i> Buka Halaman Kontrol Admin (Edit/Hapus Semua Data)
-            </a>
-        </div>
-    </div>
-
-    <!-- Modal Preview -->
-    <div id="previewModal" class="modal-overlay">
-        <div class="modal-card">
-            <h3>Preview Data Sebelum Terbit</h3>
-            <img id="previewImg" class="modal-preview-img" src="" alt="Preview">
-            <p id="previewText" style="text-align: left; font-size: 0.9rem; color: #475569; line-height: 1.5; margin-bottom: 1rem;"></p>
-            <div class="modal-btn-group">
-                <button type="button" class="btn-modal btn-edit" id="modalEditBtn">Edit Kembali</button>
-                <button type="button" class="btn-modal btn-confirm" id="modalConfirmBtn">Terbitkan Sekarang</button>
-            </div>
         </div>
     </div>
 
     <script src="config.js"></script>
     <script>
-        const productForm = document.getElementById('productForm');
-        const successAlert = document.getElementById('successAlert');
-        const previewBtn = document.getElementById('previewBtn');
-        const previewModal = document.getElementById('previewModal');
-        const modalEditBtn = document.getElementById('modalEditBtn');
-        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
-        const previewImg = document.getElementById('previewImg');
-        const previewText = document.getElementById('previewText');
+        // Format angka otomatis jadi ribuan (titik) saat diketik
+        const inputHarga = document.getElementById('harga');
+        inputHarga.addEventListener('input', function (e) {
+            let value = this.value.replace(/[^,\d]/g, '').toString();
+            let split = value.split(',');
+            let sisa = split[0].length % 3;
+            let rupiah = split[0].substr(0, sisa);
+            let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
 
-        let compressedImageCache = "";
-        let formDataCache = {};
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
 
+            rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+            this.value = rupiah;
+        });
+
+        // Fungsi kompresi gambar agar muat di Firestore
         function compressImage(file, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -240,67 +196,54 @@
             }
         }
 
-        previewBtn.addEventListener('click', function() {
-            const namaToko = document.getElementById('namaToko').value.trim();
-            const nama = document.getElementById('namaProduk').value.trim();
-            const kategori = document.getElementById('kategori').value;
-            const harga = document.getElementById('harga').value.trim();
-            const fileInput = document.getElementById('fotoProduk');
-            const noWa = document.getElementById('noWa').value.trim();
-            const deskripsi = document.getElementById('deskripsi').value.trim();
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-            if (!namaToko || !nama || !harga || !fileInput.files[0] || !noWa || !deskripsi) {
-                alert("Mohon lengkapi seluruh formulir dengan benar!");
+            if (!db) {
+                alert("Database Firebase belum terhubung. Periksa konfigurasi di config.js.");
                 return;
             }
 
-            previewBtn.disabled = true;
-            previewBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyiapkan Preview...';
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sedang Mengunggah...';
 
-            compressImage(fileInput.files[0], function(base64) {
-                compressedImageCache = base64;
-                formDataCache = { namaToko, nama, kategori, harga: Number(harga), gambar: base64, noWa, deskripsi };
+            const fileInput = document.getElementById('fotoProduk');
+            const file = fileInput.files[0];
 
-                previewImg.src = base64;
-                previewText.innerHTML = `<strong>Toko:</strong> ${namaToko}<br><strong>Produk:</strong> ${nama}<br><strong>Kategori:</strong> ${kategori}<br><strong>Harga:</strong> Rp ${Number(harga).toLocaleString('id-ID')}<br><strong>WA:</strong> ${noWa}`;
-                
-                previewBtn.disabled = false;
-                previewBtn.innerHTML = '<i class="fa-solid fa-eye"></i> Preview & Periksa Data';
-                previewModal.style.display = 'flex';
-            });
-        });
-
-        modalEditBtn.addEventListener('click', function() {
-            previewModal.style.display = 'none';
-        });
-
-        modalConfirmBtn.addEventListener('click', async function() {
-            previewModal.style.display = 'none';
-            modalConfirmBtn.disabled = true;
-            modalConfirmBtn.innerHTML = 'Menyimpan...';
-
-            try {
-                if (!db) {
-                    alert("Database belum terhubung!");
-                    return;
-                }
-
-                await db.collection('products').add({
-                    ...formDataCache,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                successAlert.style.display = 'block';
-                productForm.reset();
-
-                setTimeout(() => { successAlert.style.display = 'none'; }, 4000);
-            } catch (err) {
-                console.error("Gagal simpan:", err);
-                alert("Gagal menerbitkan produk ke database.");
-            } finally {
-                modalConfirmBtn.disabled = false;
-                modalConfirmBtn.innerHTML = 'Terbitkan Sekarang';
+            if (!file) {
+                alert("Silakan pilih foto produk terlebih dahulu.");
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Terbitkan Produk Sekarang';
+                return;
             }
+
+            compressImage(file, function(compressedBase64) {
+                const productData = {
+                    namaToko: document.getElementById('namaToko').value.trim(),
+                    nama: document.getElementById('nama').value.trim(),
+                    kategori: document.getElementById('kategori').value,
+                    harga: Number(document.getElementById('harga').value.replace(/\./g, '')), // Bersihkan titik sebelum simpan
+                    gambar: compressedBase64,
+                    noWa: document.getElementById('noWa').value.trim(),
+                    deskripsi: document.getElementById('deskripsi').value.trim(),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                db.collection('products').add(productData)
+                    .then(() => {
+                        alert("Berhasil! Produk Anda telah diterbitkan ke etalase Pasar Candi Gebang Permai.");
+                        document.getElementById('productForm').reset();
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Terbitkan Produk Sekarang';
+                    })
+                    .catch((error) => {
+                        console.error("Gagal menyimpan:", error);
+                        alert("Gagal mengunggah produk. Ukuran data mungkin terlalu besar atau koneksi terganggu.");
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Terbitkan Produk Sekarang';
+                    });
+            });
         });
     </script>
 </body>
