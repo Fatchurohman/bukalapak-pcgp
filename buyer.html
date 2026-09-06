@@ -208,53 +208,62 @@
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         }
 
-        function renderProducts() {
+                function renderProducts(filteredList = null) {
             const container = document.getElementById('productsContainer');
             if (!container) return;
 
-            container.innerHTML = '';
+            const listToRender = filteredList || allProducts;
 
-            const filtered = currentCategory === "Semua" 
-                ? allProducts 
-                : allProducts.filter(item => item.kategori === currentCategory);
-
-            if (filtered.length === 0) {
+            if (listToRender.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <i class="fa-solid fa-gem"></i>
-                        <p>Belum ada produk dalam kategori ini.</p>
+                        <i class="fa-solid fa-box-open"></i>
+                        <p>Belum ada produk atau kuliner yang tersedia saat ini.</p>
                     </div>
                 `;
                 return;
             }
 
-            filtered.forEach(item => {
-                const name = item.nama || "Tanpa Nama";
-                const cat = item.kategori || "Lainnya";
-                const seller = item.namaToko || "Warga Candi Gebang";
-                const price = formatRupiah(item.harga);
-                const img = item.gambar || "https://via.placeholder.com/300x200?text=No+Image";
-                const desc = item.deskripsi || "-";
+            container.innerHTML = '';
+            listToRender.forEach(item => {
+                const img = item.gambar || 'https://via.placeholder.com/300x200?text=Tidak+Ada+Foto';
+                const seller = item.namaToko || 'Warga Candi Gebang';
+                const name = item.nama || 'Produk Warga';
+                const cat = item.kategori || 'Lainnya';
+                const price = 'Rp ' + Number(item.harga || 0).toLocaleString('id-ID');
+                const desc = item.deskripsi || '';
                 
-                let cleanWa = (item.noWa || "").toString().trim().replace(/\D/g, '');
-                if (cleanWa.startsWith('0')) {
-                    cleanWa = '62' + cleanWa.slice(1);
-                } else if (!cleanWa.startsWith('62') && cleanWa.length > 0) {
-                    cleanWa = '62' + cleanWa;
+                // Pembersihan nomor WhatsApp agar siap link
+                let rawWa = item.noWa ? String(item.noWa).trim() : '';
+                let cleanWa = '';
+                if (rawWa.startsWith('0')) {
+                    cleanWa = '62' + rawWa.substring(1);
+                } else if (rawWa.startsWith('62')) {
+                    cleanWa = rawWa;
+                } else if (rawWa.startsWith('+62')) {
+                    cleanWa = rawWa.substring(1);
+                } else {
+                    cleanWa = '62' + rawWa;
                 }
-
-                const waMessage = encodeURIComponent(`Halo Kak/Bu, saya tertarik memesan produk *${name}* (${price}) dari lapak *${seller}* (Candi Gebang Permai). Apakah masih tersedia?`);
+                
+                const waMessage = encodeURIComponent(`Halo Kak/Bpk/Ibu ${seller}, saya tertarik untuk memesan produk "${name}" (${price}) yang ada di Pasar Candi Gebang Permai. Apakah masih tersedia?`);
                 const waLink = cleanWa ? `https://wa.me/${cleanWa}?text=${waMessage}` : '#';
 
-                const cardEl = document.createElement('div');
-                cardEl.className = 'product-card';
-                                // Hitung Tanggal Terbit & Tanggal Kadaluarsa (10 Hari ke Depan)
-                const createdDate = item.createdAt ? item.createdAt.toDate() : new Date();
-                const expiryDate = new Date(createdDate.getTime() + (10 * 24 * 60 * 60 * 1000));
+                // Aman untuk penanggalan (baik ada maupun tidak ada createdAt)
+                let formatCreatedAt = 'Baru saja';
+                let formatExpiry = '10 hari lagi';
                 
-                const options = { day: 'numeric', month: 'short', year: 'numeric' };
-                const formatCreated = createdDate.toLocaleDateString('id-ID', options);
-                const formatExpiry = expiryDate.toLocaleDateString('id-ID', options);
+                if (item.createdAt && typeof item.createdAt.toDate === 'function') {
+                    try {
+                        const createdDate = item.createdAt.toDate();
+                        const expiryDate = new Date(createdDate.getTime() + (10 * 24 * 60 * 60 * 1000));
+                        const opt = { day: 'numeric', month: 'short', year: 'numeric' };
+                        formatCreatedAt = createdDate.toLocaleDateString('id-ID', opt);
+                        formatExpiry = expiryDate.toLocaleDateString('id-ID', opt);
+                    } catch (err) {
+                        console.log("Format tanggal lama diabaikan");
+                    }
+                }
 
                 const cardEl = document.createElement('div');
                 cardEl.className = 'product-card';
@@ -271,9 +280,9 @@
                         <h3 class="product-title">${name}</h3>
                         <p class="product-desc">${desc}</p>
                         
-                        <!-- Informasi Tanggal Otomatis -->
+                        <!-- Informasi Tanggal Aman -->
                         <div style="font-size: 0.75rem; color: #64748b; background: rgba(100, 116, 139, 0.1); padding: 0.4rem 0.6rem; border-radius: 6px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
-                            <span><i class="fa-regular fa-calendar"></i> Tayang: ${formatCreated}</span>
+                            <span><i class="fa-regular fa-calendar"></i> Tayang: ${formatCreatedAt}</span>
                             <span><i class="fa-regular fa-clock" style="color: #d97706;"></i> Hapus: ${formatExpiry}</span>
                         </div>
 
@@ -285,7 +294,6 @@
                         </div>
                     </div>
                 `;
-
                 container.appendChild(cardEl);
             });
         }
