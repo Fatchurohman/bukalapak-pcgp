@@ -124,7 +124,6 @@
 
         .product-body { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
         
-        /* Informasi Toko / Penjual di dalam bodi kartu */
         .store-info {
             display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 700;
             color: #d97706; background: #fef3c7; padding: 0.35rem 0.75rem; border-radius: 8px;
@@ -153,7 +152,7 @@
 <body>
     <div class="container">
         <header>
-            <a href="index.html" class="nav-home-btn"><i class="fa-solid fa-arrow-left"></i> Beranda Utama</a>
+            <a href="javascript:location.reload();" class="nav-home-btn"><i class="fa-solid fa-rotate-right"></i> Segarkan Etalase</a>
             <h1><i class="fa-solid fa-crown" style="color: #fbbf24;"></i> Pasar Candi Gebang Permai</h1>
             <p>Etalase Eksklusif Warga: Mewah, Berkualitas, Langsung Antar ke Rumah</p>
             <div class="dev-badge-container">
@@ -208,24 +207,28 @@
             window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
         }
 
-                function renderProducts(filteredList = null) {
+        function renderProducts() {
             const container = document.getElementById('productsContainer');
             if (!container) return;
 
-            const listToRender = filteredList || allProducts;
+            // Filter berdasarkan kategori yang dipilih
+            let filteredList = allProducts;
+            if (currentCategory !== "Semua") {
+                filteredList = allProducts.filter(item => item.kategori === currentCategory);
+            }
 
-            if (listToRender.length === 0) {
+            if (filteredList.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fa-solid fa-box-open"></i>
-                        <p>Belum ada produk atau kuliner yang tersedia saat ini.</p>
+                        <p>Belum ada produk atau kuliner yang tersedia pada kategori ini.</p>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = '';
-            listToRender.forEach(item => {
+            filteredList.forEach(item => {
                 const img = item.gambar || 'https://via.placeholder.com/300x200?text=Tidak+Ada+Foto';
                 const seller = item.namaToko || 'Warga Candi Gebang';
                 const name = item.nama || 'Produk Warga';
@@ -249,7 +252,7 @@
                 const waMessage = encodeURIComponent(`Halo Kak/Bpk/Ibu ${seller}, saya tertarik untuk memesan produk "${name}" (${price}) yang ada di Pasar Candi Gebang Permai. Apakah masih tersedia?`);
                 const waLink = cleanWa ? `https://wa.me/${cleanWa}?text=${waMessage}` : '#';
 
-                // Aman untuk penanggalan (baik ada maupun tidak ada createdAt)
+                // Aman untuk penanggalan
                 let formatCreatedAt = 'Baru saja';
                 let formatExpiry = '10 hari lagi';
                 
@@ -261,7 +264,7 @@
                         formatCreatedAt = createdDate.toLocaleDateString('id-ID', opt);
                         formatExpiry = expiryDate.toLocaleDateString('id-ID', opt);
                     } catch (err) {
-                        console.log("Format tanggal lama diabaikan");
+                        console.log("Format tanggal diabaikan");
                     }
                 }
 
@@ -280,7 +283,7 @@
                         <h3 class="product-title">${name}</h3>
                         <p class="product-desc">${desc}</p>
                         
-                        <!-- Informasi Tanggal Aman -->
+                        <!-- Informasi Tanggal & Masa Aktif Otomatis -->
                         <div style="font-size: 0.75rem; color: #64748b; background: rgba(100, 116, 139, 0.1); padding: 0.4rem 0.6rem; border-radius: 6px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
                             <span><i class="fa-regular fa-calendar"></i> Tayang: ${formatCreatedAt}</span>
                             <span><i class="fa-regular fa-clock" style="color: #d97706;"></i> Hapus: ${formatExpiry}</span>
@@ -298,7 +301,7 @@
             });
         }
 
-                function loadProducts() {
+        function loadProducts() {
             const container = document.getElementById('productsContainer');
             if (!container) return;
 
@@ -326,7 +329,11 @@
                 for (const doc of snapshot.docs) {
                     const item = doc.data();
                     
-                    // Aman untuk data lama yang belum punya createdAt
+                    // PENYARING UTAMA: Abaikan data sampah yang kosong atau tidak punya nama & harga
+                    if (!item.nama && !item.harga) {
+                        continue; 
+                    }
+
                     let createdAtTime = now;
                     if (item.createdAt && typeof item.createdAt.toDate === 'function') {
                         createdAtTime = item.createdAt.toDate().getTime();
@@ -334,7 +341,7 @@
 
                     const age = now - createdAtTime;
 
-                    // Auto-purge > 10 hari (kecuali data lama tanpa tanggal, kita amankan dulu)
+                    // Auto-purge > 10 hari
                     if (item.createdAt && age > TEN_DAYS_MS) {
                         try {
                             await db.collection('products').doc(doc.id).delete();
@@ -361,7 +368,6 @@
                     </div>
                 `;
             });
-
         }
 
         document.querySelectorAll('.filter-btn').forEach(btn => {
