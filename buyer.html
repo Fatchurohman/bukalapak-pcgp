@@ -248,6 +248,16 @@
 
                 const cardEl = document.createElement('div');
                 cardEl.className = 'product-card';
+                                // Hitung Tanggal Terbit & Tanggal Kadaluarsa (10 Hari ke Depan)
+                const createdDate = item.createdAt ? item.createdAt.toDate() : new Date();
+                const expiryDate = new Date(createdDate.getTime() + (10 * 24 * 60 * 60 * 1000));
+                
+                const options = { day: 'numeric', month: 'short', year: 'numeric' };
+                const formatCreated = createdDate.toLocaleDateString('id-ID', options);
+                const formatExpiry = expiryDate.toLocaleDateString('id-ID', options);
+
+                const cardEl = document.createElement('div');
+                cardEl.className = 'product-card';
                 cardEl.innerHTML = `
                     <div class="image-wrapper">
                         <div class="seller-badge"><i class="fa-solid fa-store" style="color:#fbbf24;"></i> ${seller}</div>
@@ -260,6 +270,13 @@
                         <span class="product-category">${cat}</span>
                         <h3 class="product-title">${name}</h3>
                         <p class="product-desc">${desc}</p>
+                        
+                        <!-- Informasi Tanggal Otomatis -->
+                        <div style="font-size: 0.75rem; color: #64748b; background: rgba(100, 116, 139, 0.1); padding: 0.4rem 0.6rem; border-radius: 6px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                            <span><i class="fa-regular fa-calendar"></i> Tayang: ${formatCreated}</span>
+                            <span><i class="fa-regular fa-clock" style="color: #d97706;"></i> Hapus: ${formatExpiry}</span>
+                        </div>
+
                         <div class="product-footer">
                             <span class="product-price">${price}</span>
                             <a href="${waLink}" ${cleanWa ? 'target="_blank"' : 'onclick="alert(\'Nomor WhatsApp tidak valid.\'); return false;"'} class="btn-wa">
@@ -268,6 +285,7 @@
                         </div>
                     </div>
                 `;
+
                 container.appendChild(cardEl);
             });
         }
