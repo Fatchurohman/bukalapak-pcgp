@@ -3,280 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kontrol Admin Rahasia - Pasar Candi Gebang Permai</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Kontrol Admin Lapak - Pasar Candi Gebang Permai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
         :root {
-            --primary: #0f172a;
-            --accent: #d97706;
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-main: #334155;
-            --radius: 16px;
+            --primary: #090d16;
+            --gold-primary: #f59e0b;
+            --gold-light: #fef3c7;
+            --gold-dark: #b45309;
+            --gold-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #b45309 100%);
+            --bg-gradient: radial-gradient(circle at top, #1e293b 0%, #090d16 100%);
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --radius: 20px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
             background: var(--bg-gradient);
-            color: var(--text-main);
+            color: #f8fafc;
             min-height: 100vh;
-            padding: 2rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 2.5rem 1rem;
         }
+
+        .container { max-width: 1280px; margin: 0 auto; }
+        
+        header { text-align: center; margin-bottom: 2.5rem; position: relative; }
+        .nav-buyer-btn {
+            position: absolute; top: 0; left: 0;
+            background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fbbf24; padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .nav-buyer-btn:hover { background: rgba(245, 158, 11, 0.25); transform: translateY(-2px); }
+        @media (max-width: 768px) { .nav-buyer-btn { position: relative; margin-bottom: 1.5rem; } }
+
+        header h1 { 
+            font-size: 2.5rem; font-weight: 800; margin-bottom: 0.4rem; 
+            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+        }
+        header p { color: #cbd5e1; font-size: 1rem; }
 
         /* Kotak Login PIN */
-        #pinContainer {
-            width: 100%; max-width: 400px;
-            background: var(--card-bg); padding: 2.5rem; border-radius: var(--radius);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.25); text-align: center;
+        .login-card {
+            max-width: 420px; margin: 4rem auto; background: var(--card-bg); padding: 2.5rem;
+            border-radius: var(--radius); border: 1px solid rgba(245, 158, 11, 0.3); text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5); backdrop-filter: blur(20px);
         }
-        #pinContainer h2 { color: var(--primary); margin-bottom: 0.5rem; font-size: 1.5rem; }
-        #pinContainer p { color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .login-card h2 { color: #fbbf24; margin-bottom: 1.5rem; font-size: 1.5rem; }
         .pin-input {
-            width: 100%; padding: 0.85rem; font-size: 1.2rem; text-align: center;
-            letter-spacing: 0.3rem; border: 1px solid #cbd5e1; border-radius: 10px; outline: none; margin-bottom: 1rem;
+            width: 100%; padding: 0.85rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(245,158,11,0.4);
+            border-radius: 12px; color: white; font-size: 1.2rem; text-align: center; letter-spacing: 5px; margin-bottom: 1.2rem; outline: none;
         }
-        .btn-pin {
-            width: 100%; background: var(--accent); color: white; border: none; padding: 0.85rem;
-            border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer;
+        .btn-login {
+            width: 100%; background: var(--gold-gradient); color: #090d16; border: none; padding: 0.85rem;
+            border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer;
         }
-        .btn-pin:hover { background: #b45309; }
 
-        /* Panel Kontrol Utama (Disembunyikan Sebelum Masukkan PIN) */
-        #controlPanel { display: none; width: 100%; max-width: 900px; margin: 0 auto; }
-        
-        header { text-align: center; margin-bottom: 2rem; color: #fff; position: relative; }
-        .nav-home-btn {
-            position: absolute; top: 0; left: 0;
-            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
-            text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; backdrop-filter: blur(5px);
+        /* Panel Admin */
+        #adminPanel { display: none; }
+        .table-card {
+            background: var(--card-bg); border-radius: var(--radius); padding: 1.5rem;
+            border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            overflow-x: auto; backdrop-filter: blur(20px);
         }
-        .nav-home-btn:hover { background: rgba(255, 255, 255, 0.2); }
-        @media (max-width: 768px) { .nav-home-btn { position: relative; margin-bottom: 1rem; } }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(245, 158, 11, 0.15); color: #fbbf24; padding: 1rem; font-size: 0.85rem; text-transform: uppercase; }
+        td { padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 0.9rem; color: #e2e8f0; vertical-align: middle; }
+        .preview-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3); }
 
-        header h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; color: #fbbf24; }
-        header p { color: #94a3b8; font-size: 1rem; }
-
-        .card {
-            background: var(--card-bg); border-radius: var(--radius); padding: 2rem;
-            box-shadow: 0 20px 25px rgba(0,0,0,0.1); backdrop-filter: blur(10px);
-        }
-        
-        .table-responsive { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left; }
-        th, td { padding: 0.85rem; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
-        th { background: #f8fafc; color: var(--primary); font-weight: 700; }
-        
         .btn-action {
-            padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
-            cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-right: 0.3rem;
+            padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-right: 0.3rem;
         }
-        .btn-edit { background: #2563eb; color: #fff; }
-        .btn-delete { background: #dc2626; color: #fff; }
+        .btn-edit { background: #3b82f6; color: white; }
+        .btn-delete { background: #ef4444; color: white; }
 
         /* Modal Edit */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000;
-            align-items: center; justify-content: center; padding: 1rem;
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; backdrop-filter: blur(5px);
         }
-        .modal-card {
-            background: #fff; width: 100%; max-width: 500px; border-radius: 16px; padding: 2rem;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto;
+        .modal-content {
+            background: #0f172a; border: 1px solid rgba(245,158,11,0.4); width: 100%; max-width: 500px;
+            padding: 2rem; border-radius: var(--radius); max-height: 90vh; overflow-y: auto;
         }
+        .modal-content h3 { color: #fbbf24; margin-bottom: 1.2rem; font-size: 1.3rem; }
         .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
-        .form-control { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; }
-        .preview-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 5px; }
+        .form-group label { display: block; font-size: 0.8rem; color: #fbbf24; margin-bottom: 0.3rem; font-weight: 700; }
+        .form-control {
+            width: 100%; padding: 0.65rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(245,158,11,0.3);
+            border-radius: 8px; color: white; font-size: 0.9rem; outline: none;
+        }
+        .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .btn-save { background: #10b981; color: white; border: none; padding: 0.75rem; border-radius: 8px; flex: 1; font-weight: 700; cursor: pointer; }
+        .btn-cancel { background: #64748b; color: white; border: none; padding: 0.75rem; border-radius: 8px; flex: 1; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <a href="buyer.html" class="nav-buyer-btn"><i class="fa-solid fa-arrow-left"></i> Lihat Katalog</a>
+            <h1><i class="fa-solid fa-sliders" style="color: #fbbf24;"></i> Kontrol Admin Lapak</h1>
+            <p>Kelola, perbarui data, atau bersihkan produk warga</p>
+        </header>
 
-    <!-- Kotak Verifikasi PIN Rahasia -->
-    <div id="pinContainer">
-        <h2><i class="fa-solid fa-lock" style="color: var(--accent);"></i> Akses Terbatas</h2>
-        <p>Masukkan PIN Rahasia Pengurus / Admin untuk membuka panel kontrol.</p>
-        <input type="password" id="pinInput" class="pin-input" placeholder="••••" maxlength="6">
-        <button type="button" class="btn-pin" onclick="verifyPin()">Buka Panel</button>
-        <p style="margin-top: 1.5rem; font-size: 0.8rem;"><a href="index.html" style="color: #64748b; text-decoration: none;"><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</a></p>
-    </div>
+        <!-- Kotak Login PIN Pengurus -->
+        <div id="loginSection" class="login-card">
+            <h2><i class="fa-solid fa-lock"></i> Masukkan PIN Pengurus</h2>
+            <input type="password" id="adminPin" class="pin-input" placeholder="••••" maxlength="6">
+            <button onclick="verifyPin()" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Masuk Panel</button>
+        </div>
 
-    <!-- Panel Kontrol Utama -->
-    <div id="controlPanel">
-        <div class="container">
-            <header>
-                <a href="admin.html" class="nav-home-btn"><i class="fa-solid fa-arrow-left"></i> Kembali ke Form</a>
-                <h1><i class="fa-solid fa-sliders"></i> Kontrol Admin Rahasia</h1>
-                <p>Kelola, Edit, atau Hapus Seluruh Data Produk Warga</p>
-            </header>
-
-            <div class="card">
-                <h2>Daftar Seluruh Produk Aktif</h2>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Foto</th>
-                                <th>Toko</th>
-                                <th>Produk</th>
-                                <th>Kategori</th>
-                                <th>Harga</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminTableBody">
-                            <tr><td colspan="6" style="text-align: center; padding: 2rem;">Memuat data...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+        <!-- Panel Tabel Produk -->
+        <div id="adminPanel">
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Toko</th>
+                            <th>Produk & Varian</th>
+                            <th>Kategori</th>
+                            <th>Harga</th>
+                            <th>Masa Tayang</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <tr><td colspan="7" style="text-align:center;">Memuat data...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- Modal Edit Produk -->
-    <div id="editModal" class="modal-overlay">
-        <div class="modal-card">
-            <h3 style="margin-bottom: 1rem; color: var(--primary);">Edit Data Produk</h3>
-            <form id="editForm">
-                <input type="hidden" id="editId">
-                <input type="hidden" id="editOldGambar">
-                <div class="form-group">
-                    <label>Nama Toko</label>
-                    <input type="text" id="editNamaToko" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>Nama Produk</label>
-                    <input type="text" id="editNama" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>Kategori</label>
-                    <select id="editKategori" class="form-control">
-                        <option value="Sembako & Bahan Pokok">Sembako & Bahan Pokok</option>
-                        <option value="Kuliner / Masakan">Kuliner / Masakan</option>
-                        <option value="Frozen Food">Frozen Food</option>
-                        <option value="Fashion & Lainnya">Fashion & Lainnya</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Harga (Rp)</label>
-                    <input type="number" id="editHarga" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>Ganti Foto Baru (Opsional)</label>
-                    <input type="file" id="editFotoProduk" class="form-control" accept="image/*">
-                    <small style="color: #64748b; font-size: 0.75rem;">Biarkan kosong jika tidak ingin mengganti foto.</small>
-                    <div><img id="currentThumb" class="preview-thumb" src="" alt="Foto Saat Ini"></div>
-                </div>
-                <div class="form-group">
-                    <label>Nomor WhatsApp</label>
-                    <input type="text" id="editNoWa" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>Deskripsi</label>
-                    <textarea id="editDeskripsi" class="form-control" rows="3" required></textarea>
-                </div>
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <button type="button" class="btn-action" style="background:#cbd5e1; color:#334155; flex:1; padding:0.7rem;" onclick="closeEditModal()">Batal</button>
-                    <button type="submit" id="btnSaveEdit" class="btn-action" style="background:#2563eb; color:#fff; flex:1; padding:0.7rem; justify-content:center;">Simpan Perubahan</button>
-                </div>
-            </form>
+    <!-- Modal Edit dengan Urutan Kolom Baru & Ganti Foto -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fa-solid fa-pen-to-square"></i> Edit Produk Warga</h3>
+            <input type="hidden" id="editId">
+            
+            <div class="form-group">
+                <label>Nama Toko</label>
+                <input type="text" id="editToko" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Nama Produk</label>
+                <input type="text" id="editNama" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Varian Rasa / Ukuran (Opsional)</label>
+                <input type="text" id="editVarian" class="form-control" placeholder="Contoh: Pedas, Manis ATAU Kecil, Besar">
+                <small style="color:#94a3b8; font-size:0.75rem;">Kosongkan saja jika produknya cuma 1 jenis standar.</small>
+            </div>
+            <div class="form-group">
+                <label>Kategori</label>
+                <select id="editKategori" class="form-control">
+                    <option value="Sembako & Bahan Pokok">Sembako & Bahan Pokok</option>
+                    <option value="Kuliner / Masakan">Kuliner / Masakan</option>
+                    <option value="Frozen Food">Frozen Food</option>
+                    <option value="Fashion & Lainnya">Fashion & Lainnya</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Harga (Rp)</label>
+                <input type="text" id="editHarga" class="form-control" inputmode="numeric">
+            </div>
+            <div class="form-group">
+                <label>Ganti Foto Baru (Opsional)</label>
+                <input type="file" id="editFoto" class="form-control" accept="image/*">
+                <small style="color:#94a3b8; font-size:0.75rem;">Biarkan kosong jika tidak ingin mengubah foto.</small>
+            </div>
+            <div class="form-group">
+                <label>No WhatsApp</label>
+                <input type="text" id="editWa" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Deskripsi</label>
+                <textarea id="editDeskripsi" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="saveEdit()" class="btn-save">Simpan Perubahan</button>
+                <button onclick="closeModal()" class="btn-cancel">Batal</button>
+            </div>
         </div>
     </div>
 
     <script src="config.js"></script>
     <script>
-        const ADMIN_PIN = "6262";
+        const MASTER_PIN = "2026"; // PIN Admin
 
         function verifyPin() {
-            const enteredPin = document.getElementById('pinInput').value.trim();
-            if (enteredPin === ADMIN_PIN) {
-                document.getElementById('pinContainer').style.display = 'none';
-                document.getElementById('controlPanel').style.display = 'block';
-                loadAdminData();
+            const pin = document.getElementById('adminPin').value;
+            if (pin === MASTER_PIN) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadAdminProducts();
             } else {
-                alert("PIN Rahasia Salah! Akses ditolak.");
-                document.getElementById('pinInput').value = '';
+                alert("PIN Salah! Hubungi pengurus utama.");
             }
         }
 
-        const tableBody = document.getElementById('adminTableBody');
-        const editModal = document.getElementById('editModal');
-        const editForm = document.getElementById('editForm');
-
-        function loadAdminData() {
+        function loadAdminProducts() {
+            const tbody = document.getElementById('adminTableBody');
             if (!db) return;
 
-            db.collection('products').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
-                tableBody.innerHTML = '';
-
+            db.collection('products').onSnapshot((snapshot) => {
                 if (snapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">Belum ada data produk.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Belum ada produk terdaftar.</td></tr>`;
                     return;
                 }
 
-                                snapshot.forEach(doc => {
+                tbody.innerHTML = '';
+                const now = new Date().getTime();
+
+                snapshot.forEach(doc => {
                     const item = doc.data();
-                    const imgUrl = item.gambar || "https://via.placeholder.com/60";
-                    
-                    // Hitung Tanggal Otomatis untuk Admin
+                    if (!item.nama && !item.harga) return; // Abaikan data kosong
+
+                    const imgUrl = item.gambar || "https://via.placeholder.com/50";
                     const createdDate = item.createdAt ? item.createdAt.toDate() : new Date();
                     const expiryDate = new Date(createdDate.getTime() + (10 * 24 * 60 * 60 * 1000));
-                    const options = { day: 'numeric', month: 'short' };
-                    const tglTayang = createdDate.toLocaleDateString('id-ID', options);
-                    const tglHapus = expiryDate.toLocaleDateString('id-ID', options);
+                    const opt = { day: 'numeric', month: 'short' };
+                    const tglTayang = createdDate.toLocaleDateString('id-ID', opt);
+                    const tglHapus = expiryDate.toLocaleDateString('id-ID', opt);
+
+                    const varianText = item.varian ? `<br><small style="color:#fbbf24;">Varian: ${item.varian}</small>` : '';
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td><img src="${imgUrl}" class="preview-thumb" alt="Foto"></td>
                         <td><strong>${item.namaToko || '-'}</strong></td>
-                        <td>${item.nama || '-'}</td>
-                        <td><span style="font-size:0.75rem; background:#fef3c7; color:#d97706; padding:0.2rem 0.5rem; border-radius:4px; font-weight:700;">${item.kategori || '-'}</span></td>
+                        <td>${item.nama || '-'}${varianText}</td>
+                        <td><span style="font-size:0.7rem; background:#fef3c7; color:#d97706; padding:0.2rem 0.5rem; border-radius:4px; font-weight:700;">${item.kategori || '-'}</span></td>
                         <td>Rp ${Number(item.harga || 0).toLocaleString('id-ID')}</td>
-                        <td style="font-size: 0.8rem; color: #475569;">
+                        <td style="font-size:0.8rem; color:#cbd5e1;">
                             <div>Tayang: ${tglTayang}</div>
-                            <div style="color: #dc2626; font-weight: 600;">Otomatis Hapus: ${tglHapus}</div>
+                            <div style="color:#ef4444; font-weight:600;">Hapus: ${tglHapus}</div>
                         </td>
                         <td>
-                            <button class="btn-action btn-edit" onclick="openEditModal(...)"><i class="fa-solid fa-pen"></i> Edit</button>
+                            <button class="btn-action btn-edit" onclick="openEditModal('${doc.id}', '${encodeURIComponent(JSON.stringify(item))}')"><i class="fa-solid fa-pen"></i> Edit</button>
                             <button class="btn-action btn-delete" onclick="deleteProduct('${doc.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
                         </td>
                     `;
-                    tableBody.appendChild(tr);
+                    tbody.appendChild(tr);
                 });
-
             });
         }
 
-        function openEditModal(id, toko, nama, kategori, harga, noWa, deskripsi, gambar) {
+        let currentEditImage = '';
+
+        function openEditModal(id, encodedItem) {
+            const item = JSON.parse(decodeURIComponent(encodedItem));
             document.getElementById('editId').value = id;
-            document.getElementById('editNamaToko').value = decodeURIComponent(toko);
-            document.getElementById('editNama').value = decodeURIComponent(nama);
-            document.getElementById('editKategori').value = decodeURIComponent(kategori);
-            document.getElementById('editHarga').value = harga;
-            document.getElementById('editNoWa').value = decodeURIComponent(noWa);
-            document.getElementById('editDeskripsi').value = decodeURIComponent(deskripsi);
-            
-            const decodedImg = decodeURIComponent(gambar);
-            document.getElementById('editOldGambar').value = decodedImg;
-            document.getElementById('currentThumb').src = decodedImg || "https://via.placeholder.com/60";
-            document.getElementById('editFotoProduk').value = ""; // Reset input file
+            document.getElementById('editToko').value = item.namaToko || '';
+            document.getElementById('editNama').value = item.nama || '';
+            document.getElementById('editVarian').value = item.varian || '';
+            document.getElementById('editKategori').value = item.kategori || 'Sembako & Bahan Pokok';
+            document.getElementById('editHarga').value = item.harga ? Number(item.harga).toLocaleString('id-ID') : '';
+            document.getElementById('editWa').value = item.noWa || '';
+            document.getElementById('editDeskripsi').value = item.deskripsi || '';
+            document.getElementById('editFoto').value = ''; 
+            currentEditImage = item.gambar || '';
 
-            editModal.style.display = 'flex';
+            document.getElementById('editModal').style.display = 'flex';
         }
 
-        function closeEditModal() {
-            editModal.style.display = 'none';
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
         }
 
-        function compressImage(file, callback) {
+        function compressImageForEdit(file, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function(event) {
@@ -304,59 +307,47 @@
             }
         }
 
-        editForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        function saveEdit() {
             const id = document.getElementById('editId').value;
-            const oldGambar = document.getElementById('editOldGambar').value;
-            const fileInput = document.getElementById('editFotoProduk');
-            const btnSave = document.getElementById('btnSaveEdit');
-
-            btnSave.disabled = true;
-            btnSave.innerHTML = 'Menyimpan...';
-
-            const processUpdate = async (finalGambar) => {
-                const updatedData = {
-                    namaToko: document.getElementById('editNamaToko').value.trim(),
-                    nama: document.getElementById('editNama').value.trim(),
-                    kategori: document.getElementById('editKategori').value,
-                    harga: Number(document.getElementById('editHarga').value),
-                    noWa: document.getElementById('editNoWa').value.trim(),
-                    deskripsi: document.getElementById('editDeskripsi').value.trim(),
-                    gambar: finalGambar
-                };
-
-                try {
-                    await db.collection('products').doc(id).update(updatedData);
-                    alert("Data produk berhasil diperbarui!");
-                    closeEditModal();
-                } catch (err) {
-                    console.error("Gagal update:", err);
-                    alert("Gagal memperbarui data.");
-                } finally {
-                    btnSave.disabled = false;
-                    btnSave.innerHTML = 'Simpan Perubahan';
-                }
+            const fileInput = document.getElementById('editFoto');
+            
+            const updateData = {
+                namaToko: document.getElementById('editToko').value.trim(),
+                nama: document.getElementById('editNama').value.trim(),
+                varian: document.getElementById('editVarian').value.trim(),
+                kategori: document.getElementById('editKategori').value,
+                harga: Number(document.getElementById('editHarga').value.replace(/\./g, '')),
+                noWa: document.getElementById('editWa').value.trim(),
+                deskripsi: document.getElementById('editDeskripsi').value.trim()
             };
 
-            // Jika admin memilih foto baru, kompres dulu sebelum disimpan
-            if (fileInput.files[0]) {
-                compressImage(fileInput.files[0], function(newBase64) {
-                    processUpdate(newBase64);
+            const executeUpdate = (finalImage) => {
+                updateData.gambar = finalImage;
+                db.collection('products').doc(id).update(updateData)
+                    .then(() => {
+                        alert("Perubahan produk berhasil disimpan!");
+                        closeModal();
+                    })
+                    .catch((err) => {
+                        console.error("Gagal update:", err);
+                        alert("Gagal menyimpan perubahan.");
+                    });
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                compressImageForEdit(fileInput.files[0], function(compressedBase64) {
+                    executeUpdate(compressedBase64);
                 });
             } else {
-                // Jika tidak ganti foto, gunakan gambar lama
-                processUpdate(oldGambar);
+                executeUpdate(currentEditImage);
             }
-        });
+        }
 
-        async function deleteProduct(id) {
-            if (confirm("Yakin ingin menghapus produk ini dari server?")) {
-                try {
-                    await db.collection('products').doc(id).delete();
-                } catch (err) {
-                    console.error("Gagal hapus:", err);
-                    alert("Gagal menghapus produk.");
-                }
+        function deleteProduct(id) {
+            if (confirm("Yakin ingin menghapus produk ini dari etalase?")) {
+                db.collection('products').doc(id).delete()
+                    .then(() => alert("Produk berhasil dihapus."))
+                    .catch(err => alert("Gagal menghapus produk."));
             }
         }
     </script>
