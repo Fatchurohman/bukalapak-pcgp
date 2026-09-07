@@ -49,7 +49,6 @@
         }
         header p { color: #cbd5e1; font-size: 0.95rem; }
 
-        /* Kotak Login Penjual Berdasarkan WA */
         .login-card {
             max-width: 420px; margin: 4rem auto; background: var(--card-bg); padding: 2.5rem;
             border-radius: var(--radius); border: 1px solid rgba(245, 158, 11, 0.3); text-align: center;
@@ -66,14 +65,13 @@
             border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer;
         }
 
-        /* Panel Produk Penjual */
         #sellerPanel { display: none; }
         .table-card {
             background: var(--card-bg); border-radius: var(--radius); padding: 1.5rem;
             border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: 0 30px 60px rgba(0,0,0,0.5);
             overflow-x: auto; backdrop-filter: blur(20px);
         }
-        .panel-header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: gap; }
+        .panel-header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
         .panel-header-info span { color: #fbbf24; font-weight: 700; font-size: 0.95rem; }
         
         table { width: 100%; border-collapse: collapse; text-align: left; }
@@ -87,7 +85,6 @@
         .btn-edit { background: #3b82f6; color: white; }
         .btn-delete { background: #ef4444; color: white; }
 
-        /* Modal Edit */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
             display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; backdrop-filter: blur(5px);
@@ -116,7 +113,6 @@
             <p>Ubah, perbarui foto, atau hapus produk dagangan Anda sendiri</p>
         </header>
 
-        <!-- Login Berdasarkan No WhatsApp Penjual -->
         <div id="loginSection" class="login-card">
             <h2><i class="fa-brands fa-whatsapp" style="color: #25d366;"></i> Masuk ke Lapak Anda</h2>
             <p>Masukkan nomor WhatsApp yang Anda daftarkan saat mengunggah produk.</p>
@@ -124,7 +120,6 @@
             <button onclick="loginSeller()" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Lihat Produk Saya</button>
         </div>
 
-        <!-- Panel Khusus Produk Penjual Tersebut -->
         <div id="sellerPanel">
             <div class="table-card">
                 <div class="panel-header-info">
@@ -150,7 +145,7 @@
         </div>
     </div>
 
-    <!-- Modal Edit Produk Penjual -->
+    <!-- Modal Edit dengan Urutan Kolom Baru -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <h3><i class="fa-solid fa-pen-to-square"></i> Edit Produk Dagangan</h3>
@@ -165,8 +160,9 @@
                 <input type="text" id="editNama" class="form-control">
             </div>
             <div class="form-group">
-                <label>Varian / Pilihan (Opsional)</label>
-                <input type="text" id="editVarian" class="form-control" placeholder="Contoh: Rasa Pedas / Ukuran L">
+                <label>Varian Rasa / Ukuran (Opsional)</label>
+                <input type="text" id="editVarian" class="form-control" placeholder="Contoh: Pedas, Manis ATAU Kecil, Besar">
+                <small style="color:#94a3b8; font-size:0.75rem;">Kosongkan saja jika produknya cuma 1 jenis standar.</small>
             </div>
             <div class="form-group">
                 <label>Kategori</label>
@@ -230,9 +226,8 @@
 
                 snapshot.forEach(doc => {
                     const item = doc.data();
-                    if (!item.nama && !item.harga) return; // Abaikan data kosong
+                    if (!item.nama && !item.harga) return; 
 
-                    // Filter ketat: HANYA tampilkan produk yang nomor WA-nya sama persis dengan yang login
                     if (item.noWa !== loggedInWa) return;
 
                     foundCount++;
