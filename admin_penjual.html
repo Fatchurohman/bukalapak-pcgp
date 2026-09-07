@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Lapak Saya - Pasar Candi Gebang Permai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #090d16;
+            --gold-primary: #f59e0b;
+            --gold-light: #fef3c7;
+            --gold-dark: #b45309;
+            --gold-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #b45309 100%);
+            --bg-gradient: radial-gradient(circle at top, #1e293b 0%, #090d16 100%);
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --radius: 20px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background: var(--bg-gradient);
+            color: #f8fafc;
+            min-height: 100vh;
+            padding: 2.5rem 1rem;
+        }
+
+        .container { max-width: 1280px; margin: 0 auto; }
+        
+        header { text-align: center; margin-bottom: 2.5rem; position: relative; }
+        .nav-buyer-btn {
+            position: absolute; top: 0; left: 0;
+            background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fbbf24; padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .nav-buyer-btn:hover { background: rgba(245, 158, 11, 0.25); transform: translateY(-2px); }
+        @media (max-width: 768px) { .nav-buyer-btn { position: relative; margin-bottom: 1.5rem; } }
+
+        header h1 { 
+            font-size: 2.3rem; font-weight: 800; margin-bottom: 0.4rem; 
+            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+        }
+        header p { color: #cbd5e1; font-size: 0.95rem; }
+
+        /* Kotak Login Penjual Berdasarkan WA */
+        .login-card {
+            max-width: 420px; margin: 4rem auto; background: var(--card-bg); padding: 2.5rem;
+            border-radius: var(--radius); border: 1px solid rgba(245, 158, 11, 0.3); text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5); backdrop-filter: blur(20px);
+        }
+        .login-card h2 { color: #fbbf24; margin-bottom: 0.5rem; font-size: 1.4rem; }
+        .login-card p { color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.5rem; }
+        .wa-input {
+            width: 100%; padding: 0.85rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(245,158,11,0.4);
+            border-radius: 12px; color: white; font-size: 1rem; text-align: center; margin-bottom: 1.2rem; outline: none;
+        }
+        .btn-login {
+            width: 100%; background: var(--gold-gradient); color: #090d16; border: none; padding: 0.85rem;
+            border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer;
+        }
+
+        /* Panel Produk Penjual */
+        #sellerPanel { display: none; }
+        .table-card {
+            background: var(--card-bg); border-radius: var(--radius); padding: 1.5rem;
+            border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            overflow-x: auto; backdrop-filter: blur(20px);
+        }
+        .panel-header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: gap; }
+        .panel-header-info span { color: #fbbf24; font-weight: 700; font-size: 0.95rem; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(245, 158, 11, 0.15); color: #fbbf24; padding: 1rem; font-size: 0.85rem; text-transform: uppercase; }
+        td { padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 0.9rem; color: #e2e8f0; vertical-align: middle; }
+        .preview-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3); }
+
+        .btn-action {
+            padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-right: 0.3rem;
+        }
+        .btn-edit { background: #3b82f6; color: white; }
+        .btn-delete { background: #ef4444; color: white; }
+
+        /* Modal Edit */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #0f172a; border: 1px solid rgba(245,158,11,0.4); width: 100%; max-width: 500px;
+            padding: 2rem; border-radius: var(--radius); max-height: 90vh; overflow-y: auto;
+        }
+        .modal-content h3 { color: #fbbf24; margin-bottom: 1.2rem; font-size: 1.3rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.8rem; color: #fbbf24; margin-bottom: 0.3rem; font-weight: 700; }
+        .form-control {
+            width: 100%; padding: 0.65rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(245,158,11,0.3);
+            border-radius: 8px; color: white; font-size: 0.9rem; outline: none;
+        }
+        .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .btn-save { background: #10b981; color: white; border: none; padding: 0.75rem; border-radius: 8px; flex: 1; font-weight: 700; cursor: pointer; }
+        .btn-cancel { background: #64748b; color: white; border: none; padding: 0.75rem; border-radius: 8px; flex: 1; font-weight: 700; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="buyer.html" class="nav-buyer-btn"><i class="fa-solid fa-arrow-left"></i> Lihat Katalog</a>
+            <h1><i class="fa-solid fa-store" style="color: #fbbf24;"></i> Kelola Lapak Saya</h1>
+            <p>Ubah, perbarui foto, atau hapus produk dagangan Anda sendiri</p>
+        </header>
+
+        <!-- Login Berdasarkan No WhatsApp Penjual -->
+        <div id="loginSection" class="login-card">
+            <h2><i class="fa-brands fa-whatsapp" style="color: #25d366;"></i> Masuk ke Lapak Anda</h2>
+            <p>Masukkan nomor WhatsApp yang Anda daftarkan saat mengunggah produk.</p>
+            <input type="text" id="sellerWa" class="wa-input" placeholder="Contoh: 081234567890">
+            <button onclick="loginSeller()" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Lihat Produk Saya</button>
+        </div>
+
+        <!-- Panel Khusus Produk Penjual Tersebut -->
+        <div id="sellerPanel">
+            <div class="table-card">
+                <div class="panel-header-info">
+                    <span id="activeSellerInfo"><i class="fa-solid fa-user-check"></i> Menampilkan produk untuk WA: -</span>
+                    <button onclick="location.reload()" style="background:none; border:1px solid #fbbf24; color:#fbbf24; padding:0.3rem 0.8rem; border-radius:6px; cursor:pointer; font-size:0.8rem;">Ganti Nomor WA</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Produk & Varian</th>
+                            <th>Kategori</th>
+                            <th>Harga</th>
+                            <th>Masa Tayang</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sellerTableBody">
+                        <tr><td colspan="6" style="text-align:center;">Memuat produk Anda...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Produk Penjual -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fa-solid fa-pen-to-square"></i> Edit Produk Dagangan</h3>
+            <input type="hidden" id="editId">
+            
+            <div class="form-group">
+                <label>Nama Toko</label>
+                <input type="text" id="editToko" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Nama Produk</label>
+                <input type="text" id="editNama" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Varian / Pilihan (Opsional)</label>
+                <input type="text" id="editVarian" class="form-control" placeholder="Contoh: Rasa Pedas / Ukuran L">
+            </div>
+            <div class="form-group">
+                <label>Kategori</label>
+                <select id="editKategori" class="form-control">
+                    <option value="Sembako & Bahan Pokok">Sembako & Bahan Pokok</option>
+                    <option value="Kuliner / Masakan">Kuliner / Masakan</option>
+                    <option value="Frozen Food">Frozen Food</option>
+                    <option value="Fashion & Lainnya">Fashion & Lainnya</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Harga (Rp)</label>
+                <input type="text" id="editHarga" class="form-control" inputmode="numeric">
+            </div>
+            <div class="form-group">
+                <label>Ganti Foto Baru (Opsional)</label>
+                <input type="file" id="editFoto" class="form-control" accept="image/*">
+                <small style="color:#94a3b8; font-size:0.75rem;">Biarkan kosong jika tidak ingin mengubah foto.</small>
+            </div>
+            <div class="form-group">
+                <label>Deskripsi</label>
+                <textarea id="editDeskripsi" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="saveEdit()" class="btn-save">Simpan Perubahan</button>
+                <button onclick="closeModal()" class="btn-cancel">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        let loggedInWa = "";
+
+        function loginSeller() {
+            const inputWa = document.getElementById('sellerWa').value.trim();
+            if (!inputWa) {
+                alert("Masukkan nomor WhatsApp Anda terlebih dahulu!");
+                return;
+            }
+            loggedInWa = inputWa;
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('sellerPanel').style.display = 'block';
+            document.getElementById('activeSellerInfo').innerHTML = `<i class="fa-solid fa-user-check"></i> Lapak dengan WA: ${loggedInWa}`;
+            loadSellerProducts();
+        }
+
+        function loadSellerProducts() {
+            const tbody = document.getElementById('sellerTableBody');
+            if (!db) return;
+
+            db.collection('products').onSnapshot((snapshot) => {
+                if (snapshot.empty) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada produk terdaftar untuk nomor WA ini.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                let foundCount = 0;
+
+                snapshot.forEach(doc => {
+                    const item = doc.data();
+                    if (!item.nama && !item.harga) return; // Abaikan data kosong
+
+                    // Filter ketat: HANYA tampilkan produk yang nomor WA-nya sama persis dengan yang login
+                    if (item.noWa !== loggedInWa) return;
+
+                    foundCount++;
+                    const imgUrl = item.gambar || "https://via.placeholder.com/50";
+                    const createdDate = item.createdAt ? item.createdAt.toDate() : new Date();
+                    const expiryDate = new Date(createdDate.getTime() + (10 * 24 * 60 * 60 * 1000));
+                    const opt = { day: 'numeric', month: 'short' };
+                    const tglTayang = createdDate.toLocaleDateString('id-ID', opt);
+                    const tglHapus = expiryDate.toLocaleDateString('id-ID', opt);
+
+                    const varianText = item.varian ? `<br><small style="color:#fbbf24;">Varian: ${item.varian}</small>` : '';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><img src="${imgUrl}" class="preview-thumb" alt="Foto"></td>
+                        <td><strong>${item.nama || '-'}</strong>${varianText}</td>
+                        <td><span style="font-size:0.7rem; background:#fef3c7; color:#d97706; padding:0.2rem 0.5rem; border-radius:4px; font-weight:700;">${item.kategori || '-'}</span></td>
+                        <td>Rp ${Number(item.harga || 0).toLocaleString('id-ID')}</td>
+                        <td style="font-size:0.8rem; color:#cbd5e1;">
+                            <div>Tayang: ${tglTayang}</div>
+                            <div style="color:#ef4444; font-weight:600;">Hapus: ${tglHapus}</div>
+                        </td>
+                        <td>
+                            <button class="btn-action btn-edit" onclick="openEditModal('${doc.id}', '${encodeURIComponent(JSON.stringify(item))}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                            <button class="btn-action btn-delete" onclick="deleteProduct('${doc.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                if (foundCount === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada produk yang diunggah menggunakan nomor WA ${loggedInWa}.</td></tr>`;
+                }
+            });
+        }
+
+        let currentEditImage = '';
+
+        function openEditModal(id, encodedItem) {
+            const item = JSON.parse(decodeURIComponent(encodedItem));
+            document.getElementById('editId').value = id;
+            document.getElementById('editToko').value = item.namaToko || '';
+            document.getElementById('editNama').value = item.nama || '';
+            document.getElementById('editVarian').value = item.varian || '';
+            document.getElementById('editKategori').value = item.kategori || 'Sembako & Bahan Pokok';
+            document.getElementById('editHarga').value = item.harga ? Number(item.harga).toLocaleString('id-ID') : '';
+            document.getElementById('editDeskripsi').value = item.deskripsi || '';
+            document.getElementById('editFoto').value = ''; 
+            currentEditImage = item.gambar || '';
+
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function compressImageForEdit(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 450;
+                    const MAX_HEIGHT = 450;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.5));
+                }
+            }
+        }
+
+        function saveEdit() {
+            const id = document.getElementById('editId').value;
+            const fileInput = document.getElementById('editFoto');
+            
+            const updateData = {
+                namaToko: document.getElementById('editToko').value.trim(),
+                nama: document.getElementById('editNama').value.trim(),
+                varian: document.getElementById('editVarian').value.trim(),
+                kategori: document.getElementById('editKategori').value,
+                harga: Number(document.getElementById('editHarga').value.replace(/\./g, '')),
+                deskripsi: document.getElementById('editDeskripsi').value.trim()
+            };
+
+            const executeUpdate = (finalImage) => {
+                updateData.gambar = finalImage;
+                db.collection('products').doc(id).update(updateData)
+                    .then(() => {
+                        alert("Perubahan produk Anda berhasil disimpan!");
+                        closeModal();
+                    })
+                    .catch((err) => {
+                        console.error("Gagal update:", err);
+                        alert("Gagal menyimpan perubahan.");
+                    });
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                compressImageForEdit(fileInput.files[0], function(compressedBase64) {
+                    executeUpdate(compressedBase64);
+                });
+            } else {
+                executeUpdate(currentEditImage);
+            }
+        }
+
+        function deleteProduct(id) {
+            if (confirm("Yakin ingin menghapus produk ini dari etalase?")) {
+                db.collection('products').doc(id).delete()
+                    .then(() => alert("Produk berhasil dihapus."))
+                    .catch(err => alert("Gagal menghapus produk."));
+            }
+        }
+    </script>
+</body>
+</html>
