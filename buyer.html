@@ -152,7 +152,7 @@
 <body>
     <div class="container">
         <header>
-            <a href="javascript:location.reload();" class="nav-home-btn"><i class="fa-solid fa-rotate-right"></i> Segarkan Etalase</a>
+            <a href="index.html" class="nav-home-btn"><i class="fa-solid fa-arrow-left"></i> Beranda Utama</a>
             <h1><i class="fa-solid fa-crown" style="color: #fbbf24;"></i> Pasar Candi Gebang Permai</h1>
             <p>Etalase Eksklusif Warga: Mewah, Berkualitas, Langsung Antar ke Rumah</p>
             <div class="dev-badge-container">
@@ -173,12 +173,7 @@
                 <i class="fa-solid fa-share-nodes"></i> Bagikan Katalog Sekarang
             </a>
         </div>
-<!-- Tombol Akses Khusus Penjual -->
-<div style="text-align: center; margin-bottom: 2rem;">
-    <a href="admin_penjual.html" style="background: rgba(245, 158, 11, 0.15); border: 1px solid #fbbf24; color: #fbbf24; padding: 0.6rem 1.5rem; border-radius: 50px; font-size: 0.85rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
-        <i class="fa-solid fa-store"></i> Mau Edit / Hapus Produk Saya? Masuk ke Lapak Sini
-    </a>
-</div>
+
         <!-- Filter Kategori -->
         <div class="filter-container" id="filterContainer">
             <button class="filter-btn active" data-category="Semua">Semua Produk</button>
@@ -216,7 +211,6 @@
             const container = document.getElementById('productsContainer');
             if (!container) return;
 
-            // Filter berdasarkan kategori yang dipilih
             let filteredList = allProducts;
             if (currentCategory !== "Semua") {
                 filteredList = allProducts.filter(item => item.kategori === currentCategory);
@@ -241,7 +235,21 @@
                 const price = 'Rp ' + Number(item.harga || 0).toLocaleString('id-ID');
                 const desc = item.deskripsi || '';
                 
-                // Pembersihan nomor WhatsApp agar siap link
+                // Render Varian (jika ada)
+                const varianVal = item.varian ? item.varian.trim() : '';
+                let varianHtml = '';
+                if (varianVal) {
+                    const listVarian = varianVal.split(',').map(v => v.trim());
+                    let badgeItems = listVarian.map(v => `<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid #fde68a; padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: inline-block; margin: 2px;">${v}</span>`).join('');
+                    
+                    varianHtml = `
+                        <div style="margin-bottom: 0.75rem;">
+                            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 0.2rem;"><i class="fa-solid fa-layer-group"></i> Pilihan Varian:</div>
+                            <div>${badgeItems}</div>
+                        </div>
+                    `;
+                }
+                
                 let rawWa = item.noWa ? String(item.noWa).trim() : '';
                 let cleanWa = '';
                 if (rawWa.startsWith('0')) {
@@ -257,7 +265,6 @@
                 const waMessage = encodeURIComponent(`Halo Kak/Bpk/Ibu ${seller}, saya tertarik untuk memesan produk "${name}" (${price}) yang ada di Pasar Candi Gebang Permai. Apakah masih tersedia?`);
                 const waLink = cleanWa ? `https://wa.me/${cleanWa}?text=${waMessage}` : '#';
 
-                // Aman untuk penanggalan
                 let formatCreatedAt = 'Baru saja';
                 let formatExpiry = '10 hari lagi';
                 
@@ -286,9 +293,12 @@
                         </div>
                         <span class="product-category">${cat}</span>
                         <h3 class="product-title">${name}</h3>
+                        
+                        <!-- Pilihan Varian Muncul di Sini -->
+                        ${varianHtml}
+
                         <p class="product-desc">${desc}</p>
                         
-                        <!-- Informasi Tanggal & Masa Aktif Otomatis -->
                         <div style="font-size: 0.75rem; color: #64748b; background: rgba(100, 116, 139, 0.1); padding: 0.4rem 0.6rem; border-radius: 6px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
                             <span><i class="fa-regular fa-calendar"></i> Tayang: ${formatCreatedAt}</span>
                             <span><i class="fa-regular fa-clock" style="color: #d97706;"></i> Hapus: ${formatExpiry}</span>
@@ -334,7 +344,6 @@
                 for (const doc of snapshot.docs) {
                     const item = doc.data();
                     
-                    // PENYARING UTAMA: Abaikan data sampah yang kosong atau tidak punya nama & harga
                     if (!item.nama && !item.harga) {
                         continue; 
                     }
@@ -346,7 +355,6 @@
 
                     const age = now - createdAtTime;
 
-                    // Auto-purge > 10 hari
                     if (item.createdAt && age > TEN_DAYS_MS) {
                         try {
                             await db.collection('products').doc(doc.id).delete();
@@ -359,7 +367,6 @@
                     tempList.push({ id: doc.id, ...item, _safeTime: createdAtTime });
                 }
 
-                // Urutkan dari yang terbaru secara manual di JavaScript
                 tempList.sort((a, b) => b._safeTime - a._safeTime);
 
                 allProducts = tempList;
