@@ -220,15 +220,16 @@
 
             compressImage(file, function(compressedBase64) {
                 const productData = {
-                    namaToko: document.getElementById('namaToko').value.trim(),
-                    nama: document.getElementById('nama').value.trim(),
-                    kategori: document.getElementById('kategori').value,
-                    harga: Number(document.getElementById('harga').value.replace(/\./g, '')), // Bersihkan titik sebelum simpan
-                    gambar: compressedBase64,
-                    noWa: document.getElementById('noWa').value.trim(),
-                    deskripsi: document.getElementById('deskripsi').value.trim(),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
+    namaToko: document.getElementById('namaToko').value.trim(),
+    nama: document.getElementById('nama').value.trim(),
+    varian: document.getElementById('varian') ? document.getElementById('varian').value.trim() : '',
+    kategori: document.getElementById('kategori').value,
+    harga: Number(document.getElementById('harga').value.replace(/\./g, '')),
+    gambar: compressedBase64,
+    noWa: document.getElementById('noWa').value.trim(), // Ini jadi kunci penyaringnya
+    deskripsi: document.getElementById('deskripsi').value.trim(),
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+};
 
                 db.collection('products').add(productData)
                     .then(() => {
