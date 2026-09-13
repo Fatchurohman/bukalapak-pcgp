@@ -3,6 +3,10 @@
  * Developer: fatur62
  */
 
+// Flag Sistem: Ubah ke true jika ingin mengaktifkan pembersihan otomatis 10 hari
+const ENABLE_EXPIRATION_LIMIT = false;
+const EXPIRATION_DAYS = 10;
+
 const firebaseConfig = {
     apiKey: "AIzaSyD6-iEAKeoUtUfUxmsXD1sMH...",
     authDomain: "candi-gebang-lapak.firebaseapp.com",
