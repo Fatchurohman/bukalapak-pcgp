@@ -198,10 +198,28 @@
         }
 
         function shareToWhatsApp() {
-            const siteUrl = window.location.href;
-            const text = encodeURIComponent(`Halo tetangga Perum Candi Gebang Permai! ✨\n\nYuk intip dan belanja produk segar, sembako, serta kuliner harian warga di Etalase Digital kami:\n${siteUrl}\n\nPraktis, langsung antar ke rumah! 🛒🛍️`);
-            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-        }
+    const siteUrl = window.location.href;
+    
+    // Teks pengantar fleksibel & hiasan emoji estetik untuk WA
+    const text = 
+`🛍️ *PASAR CANDI GEBANG PERMAI* 🛍️
+ ─── Etalase Digital Warga ───
+
+Pusat jual beli produk, kuliner, & sembako lokal dari tetangga sekitar kita!
+
+✨ *Keunggulan Lapak Warga:*
+🛒 Pilihan produk lengkap & segar
+🤝 Langsung terhubung ke WhatsApp penjual
+📍 Transaksi mudah, aman, & dekat dari rumah
+
+👇 *Yuk cek produk lengkapnya di sini:*
+${siteUrl}
+
+Dukung usaha tetangga dan belanja lokal sekarang! 🏬✨`;
+
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(whatsappUrl, '_blank');
+}
 
         function renderProducts() {
             const container = document.getElementById('productsContainer');
