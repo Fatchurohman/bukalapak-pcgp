@@ -65,7 +65,6 @@
         }
         @keyframes blink { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
 
-        /* Tombol Share Grup Warga Mewah */
         .share-banner {
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(15, 23, 42, 0.8));
@@ -81,7 +80,6 @@
         }
         .btn-share-wa:hover { background: #22c55e; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6); }
 
-        /* Filter Kategori Nuansa Gold */
         .filter-container {
             display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2.5rem;
         }
@@ -163,7 +161,6 @@
             </div>
         </header>
 
-        <!-- Tombol Share ke Grup Warga -->
         <div class="share-banner">
             <div class="share-info">
                 <h3><i class="fa-brands fa-whatsapp" style="color: #25d366; font-size: 1.3rem;"></i> Bagikan Etalase ke Grup WhatsApp Warga</h3>
@@ -174,7 +171,6 @@
             </a>
         </div>
 
-        <!-- Filter Kategori -->
         <div class="filter-container" id="filterContainer">
             <button class="filter-btn active" data-category="Semua">Semua Produk</button>
             <button class="filter-btn" data-category="Sembako & Bahan Pokok">Sembako</button>
@@ -235,7 +231,6 @@
                 const price = 'Rp ' + Number(item.harga || 0).toLocaleString('id-ID');
                 const desc = item.deskripsi || '';
                 
-                // Render Varian (jika ada)
                 const varianVal = item.varian ? item.varian.trim() : '';
                 let varianHtml = '';
                 if (varianVal) {
@@ -266,19 +261,28 @@
                 const waLink = cleanWa ? `https://wa.me/${cleanWa}?text=${waMessage}` : '#';
 
                 let formatCreatedAt = 'Baru saja';
-                let formatExpiry = '10 hari lagi';
+                let formatExpiry = 'Selamanya';
                 
                 if (item.createdAt && typeof item.createdAt.toDate === 'function') {
                     try {
                         const createdDate = item.createdAt.toDate();
-                        const expiryDate = new Date(createdDate.getTime() + (10 * 24 * 60 * 60 * 1000));
                         const opt = { day: 'numeric', month: 'short', year: 'numeric' };
                         formatCreatedAt = createdDate.toLocaleDateString('id-ID', opt);
-                        formatExpiry = expiryDate.toLocaleDateString('id-ID', opt);
+                        
+                        const isExpiredActive = typeof ENABLE_EXPIRATION_LIMIT !== 'undefined' ? ENABLE_EXPIRATION_LIMIT : false;
+                        if (isExpiredActive) {
+                            const daysLimit = typeof EXPIRATION_DAYS !== 'undefined' ? EXPIRATION_DAYS : 10;
+                            const expiryDate = new Date(createdDate.getTime() + (daysLimit * 24 * 60 * 60 * 1000));
+                            formatExpiry = expiryDate.toLocaleDateString('id-ID', opt);
+                        }
                     } catch (err) {
-                        console.log("Format tanggal diabaikan");
+                        console.error("Format tanggal diabaikan:", err);
                     }
                 }
+
+                const expiryHtml = (typeof ENABLE_EXPIRATION_LIMIT !== 'undefined' && ENABLE_EXPIRATION_LIMIT)
+                    ? `<span><i class="fa-regular fa-clock" style="color: #d97706;"></i> Hapus: ${formatExpiry}</span>`
+                    : `<span><i class="fa-solid fa-infinity" style="color: #059669;"></i> Aktif Permanen</span>`;
 
                 const cardEl = document.createElement('div');
                 cardEl.className = 'product-card';
@@ -294,14 +298,13 @@
                         <span class="product-category">${cat}</span>
                         <h3 class="product-title">${name}</h3>
                         
-                        <!-- Pilihan Varian Muncul di Sini -->
                         ${varianHtml}
 
                         <p class="product-desc">${desc}</p>
                         
                         <div style="font-size: 0.75rem; color: #64748b; background: rgba(100, 116, 139, 0.1); padding: 0.4rem 0.6rem; border-radius: 6px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
                             <span><i class="fa-regular fa-calendar"></i> Tayang: ${formatCreatedAt}</span>
-                            <span><i class="fa-regular fa-clock" style="color: #d97706;"></i> Hapus: ${formatExpiry}</span>
+                            ${expiryHtml}
                         </div>
 
                         <div class="product-footer">
@@ -338,7 +341,10 @@
                 }
 
                 const now = new Date().getTime();
-                const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
+                const isExpiredActive = typeof ENABLE_EXPIRATION_LIMIT !== 'undefined' ? ENABLE_EXPIRATION_LIMIT : false;
+                const daysLimit = typeof EXPIRATION_DAYS !== 'undefined' ? EXPIRATION_DAYS : 10;
+                const EXPIRATION_MS = daysLimit * 24 * 60 * 60 * 1000;
+                
                 let tempList = [];
 
                 for (const doc of snapshot.docs) {
@@ -350,12 +356,16 @@
 
                     let createdAtTime = now;
                     if (item.createdAt && typeof item.createdAt.toDate === 'function') {
-                        createdAtTime = item.createdAt.toDate().getTime();
+                        try {
+                            createdAtTime = item.createdAt.toDate().getTime();
+                        } catch (e) {
+                            createdAtTime = now;
+                        }
                     }
 
                     const age = now - createdAtTime;
 
-                    if (item.createdAt && age > TEN_DAYS_MS) {
+                    if (isExpiredActive && item.createdAt && age > EXPIRATION_MS) {
                         try {
                             await db.collection('products').doc(doc.id).delete();
                         } catch (e) {
