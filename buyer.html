@@ -200,26 +200,24 @@
         function shareToWhatsApp() {
     const siteUrl = window.location.href;
     
-    // Teks pengantar dengan bingkai ornamen tepi
+    // Teks pengantar yang rapi & tidak patah di layar HP
     const text = 
-`╔════════════════════════╗
- 🛍️ *PASAR CANDI GEBANG PERMAI* 🛍️
- ─── Etalase Digital Warga ───
-╚════════════════════════╝
+`🛍️ *PASAR CANDI GEBANG PERMAI* 🛍️
+══════════════════════
+    ─── Etalase Digital Warga ───
 
 Pusat jual beli produk, kuliner, & sembako lokal dari tetangga sekitar kita!
 
-┌────────────────────────┐
-  ✨ *Keunggulan Lapak Warga:*
-  🛒 Pilihan produk lengkap & segar
-  🤝 Langsung terhubung ke WA penjual
-  📍 Transaksi mudah, aman, & dekat
-└────────────────────────┘
+🔹 *Keunggulan Lapak Warga:*
+🛒 Pilihan produk lengkap & segar
+🤝 Langsung terhubung ke WA penjual
+📍 Transaksi mudah, aman, & dekat
 
+══════════════════════
 👇 *Yuk cek produk lengkapnya di sini:*
 ${siteUrl}
 
-═══ Dukung Usaha Tetangga! ═══`;
+✨ *Dukung Usaha Tetangga!* ✨`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
     window.open(whatsappUrl, '_blank');
