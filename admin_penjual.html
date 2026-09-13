@@ -3,358 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Lapak Saya - Pasar Candi Gebang Permai</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Kelola Lapak Penjual - Pasar Candi Gebang Permai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
     <style>
         :root {
-            --primary: #090d16;
-            --gold-primary: #f59e0b;
-            --gold-light: #fef3c7;
-            --gold-dark: #b45309;
-            --gold-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #b45309 100%);
-            --bg-gradient: radial-gradient(circle at top, #1e293b 0%, #090d16 100%);
-            --card-bg: rgba(15, 23, 42, 0.85);
-            --radius: 20px;
+            --primary: #0f172a;
+            --accent: #d97706;
+            --accent-hover: #b45309;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --text-main: #334155;
+            --radius: 16px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
         body {
             background: var(--bg-gradient);
-            color: #f8fafc;
+            color: var(--text-main);
             min-height: 100vh;
-            padding: 2.5rem 1rem;
+            padding: 2rem 1rem;
         }
 
-        .container { max-width: 1280px; margin: 0 auto; }
-        
-        header { text-align: center; margin-bottom: 2.5rem; position: relative; }
-        .nav-buyer-btn {
-            position: absolute; top: 0; left: 0;
-            background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);
-            color: #fbbf24; padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.85rem; font-weight: 600;
-            text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-        .nav-buyer-btn:hover { background: rgba(245, 158, 11, 0.25); transform: translateY(-2px); }
-        @media (max-width: 768px) { .nav-buyer-btn { position: relative; margin-bottom: 1.5rem; } }
+        .container { max-width: 1000px; margin: 0 auto; }
 
-        header h1 { 
-            font-size: 2.3rem; font-weight: 800; margin-bottom: 0.4rem; 
-            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+        .header-nav {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;
         }
-        header p { color: #cbd5e1; font-size: 0.95rem; }
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.6rem 1.2rem; border-radius: 50px; text-decoration: none; font-size: 0.9rem;
+            display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;
+        }
+        .btn-back:hover { background: rgba(255, 255, 255, 0.2); }
 
-        .login-card {
-            max-width: 420px; margin: 4rem auto; background: var(--card-bg); padding: 2.5rem;
-            border-radius: var(--radius); border: 1px solid rgba(245, 158, 11, 0.3); text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5); backdrop-filter: blur(20px);
-        }
-        .login-card h2 { color: #fbbf24; margin-bottom: 0.5rem; font-size: 1.4rem; }
-        .login-card p { color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.5rem; }
-        .wa-input {
-            width: 100%; padding: 0.85rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(245,158,11,0.4);
-            border-radius: 12px; color: white; font-size: 1rem; text-align: center; margin-bottom: 1.2rem; outline: none;
-        }
-        .btn-login {
-            width: 100%; background: var(--gold-gradient); color: #090d16; border: none; padding: 0.85rem;
-            border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer;
+        .card {
+            background: var(--card-bg); border-radius: var(--radius); padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); margin-bottom: 2.5rem;
         }
 
-        #sellerPanel { display: none; }
-        .table-card {
-            background: var(--card-bg); border-radius: var(--radius); padding: 1.5rem;
-            border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-            overflow-x: auto; backdrop-filter: blur(20px);
-        }
-        .panel-header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
-        .panel-header-info span { color: #fbbf24; font-weight: 700; font-size: 0.95rem; }
-        
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: rgba(245, 158, 11, 0.15); color: #fbbf24; padding: 1rem; font-size: 0.85rem; text-transform: uppercase; }
-        td { padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 0.9rem; color: #e2e8f0; vertical-align: middle; }
-        .preview-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3); }
+        h2 { font-size: 1.4rem; color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
 
-        .btn-action {
-            padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.3rem; margin-right: 0.3rem;
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        label { display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 0.4rem; color: #475569; }
+        input, select, textarea {
+            width: 100%; padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 10px;
+            font-size: 0.95rem; outline: none; transition: all 0.2s; background: #f8fafc;
         }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(217,119,6,0.15); }
+
+        .btn-submit {
+            background: var(--accent); color: white; border: none; padding: 0.85rem 1.5rem;
+            border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; width: 100%;
+            transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+        }
+        .btn-submit:hover { background: var(--accent-hover); }
+        .btn-cancel {
+            background: #64748b; color: white; border: none; padding: 0.85rem 1.5rem;
+            border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; display: none; margin-top: 0.5rem; width: 100%;
+        }
+
+        /* Tabel Produk */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+        th { background: #f1f5f9; color: #475569; font-weight: 700; }
+        .img-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+
+        .btn-act { padding: 0.4rem 0.75rem; border-radius: 6px; border: none; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-right: 0.25rem; }
         .btn-edit { background: #3b82f6; color: white; }
         .btn-delete { background: #ef4444; color: white; }
 
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
-            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background: #0f172a; border: 1px solid rgba(245,158,11,0.4); width: 100%; max-width: 500px;
-            padding: 2rem; border-radius: var(--radius); max-height: 90vh; overflow-y: auto;
-        }
-        .modal-content h3 { color: #fbbf24; margin-bottom: 1.2rem; font-size: 1.3rem; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; font-size: 0.8rem; color: #fbbf24; margin-bottom: 0.3rem; font-weight: 700; }
-        .form-control {
-            width: 100%; padding: 0.65rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(245,158,11,0.3);
-            border-radius: 8px; color: white; font-size: 0.9rem; outline: none;
-        }
-        .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
-        .btn-save { background: #10b981; color: white; border: none; padding: 0.75rem; border-radius: 8px; flex: 1; font-weight: 700; cursor: pointer; }
-        .btn-cancel { background: #64748b; color: white; border: none; padding: 0.75rem; border-radius: 8px; flex: 1; font-weight: 700; cursor: pointer; }
+        .dev-badge { text-align: center; color: #cbd5e1; font-size: 0.8rem; margin-top: 2rem; }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <a href="buyer.html" class="nav-buyer-btn"><i class="fa-solid fa-arrow-left"></i> Lihat Katalog</a>
-            <h1><i class="fa-solid fa-store" style="color: #fbbf24;"></i> Kelola Lapak Saya</h1>
-            <p>Ubah, perbarui foto, atau hapus produk dagangan Anda sendiri</p>
-        </header>
-
-        <div id="loginSection" class="login-card">
-            <h2><i class="fa-brands fa-whatsapp" style="color: #25d366;"></i> Masuk ke Lapak Anda</h2>
-            <p>Masukkan nomor WhatsApp yang Anda daftarkan saat mengunggah produk.</p>
-            <input type="text" id="sellerWa" class="wa-input" placeholder="Contoh: 081234567890">
-            <button onclick="loginSeller()" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Lihat Produk Saya</button>
+        <div class="header-nav">
+            <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Beranda Utama</a>
+            <h1 style="color: #fff; font-size: 1.5rem;"><i class="fa-solid fa-store" style="color: #fbbf24;"></i> Panel Penjual</h1>
         </div>
 
-        <div id="sellerPanel">
-            <div class="table-card">
-                <div class="panel-header-info">
-                    <span id="activeSellerInfo"><i class="fa-solid fa-user-check"></i> Menampilkan produk untuk WA: -</span>
-                    <button onclick="location.reload()" style="background:none; border:1px solid #fbbf24; color:#fbbf24; padding:0.3rem 0.8rem; border-radius:6px; cursor:pointer; font-size:0.8rem;">Ganti Nomor WA</button>
+        <!-- Form Tambah / Edit Produk -->
+        <div class="card">
+            <h2 id="formTitle"><i class="fa-solid fa-square-plus" style="color: var(--accent);"></i> Tambah Produk Baru</h2>
+            <form id="productForm">
+                <input type="hidden" id="editProductId" value="">
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="namaToko">Nama Toko / Pemilik</label>
+                        <input type="text" id="namaToko" placeholder="Contoh: Bu Siti Sembako" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="noWa">Nomor WhatsApp</label>
+                        <input type="tel" id="noWa" placeholder="08123456789" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nama">Nama Produk / Makanan</label>
+                        <input type="text" id="nama" placeholder="Contoh: Beras C4 Premium 5kg" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="harga">Harga (Rp)</label>
+                        <input type="number" id="harga" placeholder="65000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kategori">Kategori Produk</label>
+                        <select id="kategori" required>
+                            <option value="Sembako & Bahan Pokok">Sembako & Bahan Pokok</option>
+                            <option value="Kuliner / Masakan">Kuliner / Masakan</option>
+                            <option value="Frozen Food">Frozen Food</option>
+                            <option value="Fashion & Lainnya">Fashion & Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="varian">Varian (Opsional, Pisahkan Koma)</label>
+                        <input type="text" id="varian" placeholder="Contoh: Pedas, Manis, Original">
+                    </div>
                 </div>
+
+                <div class="form-group full-width">
+                    <label for="gambar">URL Gambar Produk</label>
+                    <input type="url" id="gambar" placeholder="https://domain.com/foto.jpg" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="deskripsi">Deskripsi Singkat</label>
+                    <textarea id="deskripsi" rows="3" placeholder="Tuliskan keterangan produk, porsi, atau promo..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnSave"><i class="fa-solid fa-paper-plane"></i> Tayangkan Produk</button>
+                <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Batal Edit</button>
+            </form>
+        </div>
+
+        <!-- Tabel Daftar Produk Penjual -->
+        <div class="card">
+            <h2><i class="fa-solid fa-list-check" style="color: var(--accent);"></i> Daftar Produk Terpasang</h2>
+            <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
                             <th>Foto</th>
-                            <th>Produk & Varian</th>
-                            <th>Kategori</th>
+                            <th>Produk</th>
+                            <th>Toko</th>
                             <th>Harga</th>
-                            <th>Masa Tayang</th>
+                            <th>Kategori</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="sellerTableBody">
-                        <tr><td colspan="6" style="text-align:center;">Memuat produk Anda...</td></tr>
+                    <tbody id="sellerProductTable">
+                        <tr><td colspan="6" style="text-align: center;">Memuat data produk...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
-    </div>
 
-    <!-- Modal Edit dengan Urutan Kolom Baru -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <h3><i class="fa-solid fa-pen-to-square"></i> Edit Produk Dagangan</h3>
-            <input type="hidden" id="editId">
-            
-            <div class="form-group">
-                <label>Nama Toko</label>
-                <input type="text" id="editToko" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Nama Produk</label>
-                <input type="text" id="editNama" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Varian Rasa / Ukuran (Opsional)</label>
-                <input type="text" id="editVarian" class="form-control" placeholder="Contoh: Pedas, Manis ATAU Kecil, Besar">
-                <small style="color:#94a3b8; font-size:0.75rem;">Kosongkan saja jika produknya cuma 1 jenis standar.</small>
-            </div>
-            <div class="form-group">
-                <label>Kategori</label>
-                <select id="editKategori" class="form-control">
-                    <option value="Sembako & Bahan Pokok">Sembako & Bahan Pokok</option>
-                    <option value="Kuliner / Masakan">Kuliner / Masakan</option>
-                    <option value="Frozen Food">Frozen Food</option>
-                    <option value="Fashion & Lainnya">Fashion & Lainnya</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Harga (Rp)</label>
-                <input type="text" id="editHarga" class="form-control" inputmode="numeric">
-            </div>
-            <div class="form-group">
-                <label>Ganti Foto Baru (Opsional)</label>
-                <input type="file" id="editFoto" class="form-control" accept="image/*">
-                <small style="color:#94a3b8; font-size:0.75rem;">Biarkan kosong jika tidak ingin mengubah foto.</small>
-            </div>
-            <div class="form-group">
-                <label>Deskripsi</label>
-                <textarea id="editDeskripsi" class="form-control" rows="3"></textarea>
-            </div>
-
-            <div class="modal-buttons">
-                <button onclick="saveEdit()" class="btn-save">Simpan Perubahan</button>
-                <button onclick="closeModal()" class="btn-cancel">Batal</button>
-            </div>
-        </div>
+        <div class="dev-badge">developer : fatur62</div>
     </div>
 
     <script src="config.js"></script>
     <script>
-        let loggedInWa = "";
-
-        function loginSeller() {
-            const inputWa = document.getElementById('sellerWa').value.trim();
-            if (!inputWa) {
-                alert("Masukkan nomor WhatsApp Anda terlebih dahulu!");
-                return;
-            }
-            loggedInWa = inputWa;
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('sellerPanel').style.display = 'block';
-            document.getElementById('activeSellerInfo').innerHTML = `<i class="fa-solid fa-user-check"></i> Lapak dengan WA: ${loggedInWa}`;
-            loadSellerProducts();
-        }
+        const productForm = document.getElementById('productForm');
+        const sellerProductTable = document.getElementById('sellerProductTable');
 
         function loadSellerProducts() {
-            const tbody = document.getElementById('sellerTableBody');
             if (!db) return;
 
             db.collection('products').onSnapshot((snapshot) => {
                 if (snapshot.empty) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada produk terdaftar untuk nomor WA ini.</td></tr>`;
+                    sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8;">Belum ada produk yang ditayangkan.</td></tr>`;
                     return;
                 }
 
-                tbody.innerHTML = '';
-                let foundCount = 0;
-
-                snapshot.forEach(doc => {
+                let html = '';
+                snapshot.docs.forEach((doc) => {
                     const item = doc.data();
-                    if (!item.nama && !item.harga) return; 
+                    const img = item.gambar || 'https://via.placeholder.com/50';
+                    const price = 'Rp ' + Number(item.harga || 0).toLocaleString('id-ID');
 
-                    if (item.noWa !== loggedInWa) return;
-
-                    foundCount++;
-                    const imgUrl = item.gambar || "https://via.placeholder.com/50";
-                    const createdDate = item.createdAt ? item.createdAt.toDate() : new Date();
-                    const expiryDate = new Date(createdDate.getTime() + (10 * 24 * 60 * 60 * 1000));
-                    const opt = { day: 'numeric', month: 'short' };
-                    const tglTayang = createdDate.toLocaleDateString('id-ID', opt);
-                    const tglHapus = expiryDate.toLocaleDateString('id-ID', opt);
-
-                    const varianText = item.varian ? `<br><small style="color:#fbbf24;">Varian: ${item.varian}</small>` : '';
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><img src="${imgUrl}" class="preview-thumb" alt="Foto"></td>
-                        <td><strong>${item.nama || '-'}</strong>${varianText}</td>
-                        <td><span style="font-size:0.7rem; background:#fef3c7; color:#d97706; padding:0.2rem 0.5rem; border-radius:4px; font-weight:700;">${item.kategori || '-'}</span></td>
-                        <td>Rp ${Number(item.harga || 0).toLocaleString('id-ID')}</td>
-                        <td style="font-size:0.8rem; color:#cbd5e1;">
-                            <div>Tayang: ${tglTayang}</div>
-                            <div style="color:#ef4444; font-weight:600;">Hapus: ${tglHapus}</div>
-                        </td>
-                        <td>
-                            <button class="btn-action btn-edit" onclick="openEditModal('${doc.id}', '${encodeURIComponent(JSON.stringify(item))}')"><i class="fa-solid fa-pen"></i> Edit</button>
-                            <button class="btn-action btn-delete" onclick="deleteProduct('${doc.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
-                        </td>
+                    html += `
+                        <tr>
+                            <td><img src="${img}" class="img-thumb" alt="${item.nama}"></td>
+                            <td><strong>${item.nama || '-'}</strong></td>
+                            <td>${item.namaToko || '-'}</td>
+                            <td>${price}</td>
+                            <td><span style="font-size:0.75rem; background:#f1f5f9; padding:0.2rem 0.5rem; border-radius:4px;">${item.kategori || 'Lainnya'}</span></td>
+                            <td>
+                                <button class="btn-act btn-edit" onclick="editProduct('${doc.id}', '${escapeHtml(item.namaToko)}', '${escapeHtml(item.noWa)}', '${escapeHtml(item.nama)}', '${item.harga}', '${item.kategori}', '${escapeHtml(item.gambar)}', '${escapeHtml(item.deskripsi)}', '${escapeHtml(item.varian || '')}')"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn-act btn-delete" onclick="deleteProduct('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
                     `;
-                    tbody.appendChild(tr);
                 });
-
-                if (foundCount === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Belum ada produk yang diunggah menggunakan nomor WA ${loggedInWa}.</td></tr>`;
-                }
+                sellerProductTable.innerHTML = html;
+            }, (error) => {
+                console.error("Gagal memuat produk penjual:", error);
+                sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444;">Gagal memuat data.</td></tr>`;
             });
         }
 
-        let currentEditImage = '';
-
-        function openEditModal(id, encodedItem) {
-            const item = JSON.parse(decodeURIComponent(encodedItem));
-            document.getElementById('editId').value = id;
-            document.getElementById('editToko').value = item.namaToko || '';
-            document.getElementById('editNama').value = item.nama || '';
-            document.getElementById('editVarian').value = item.varian || '';
-            document.getElementById('editKategori').value = item.kategori || 'Sembako & Bahan Pokok';
-            document.getElementById('editHarga').value = item.harga ? Number(item.harga).toLocaleString('id-ID') : '';
-            document.getElementById('editDeskripsi').value = item.deskripsi || '';
-            document.getElementById('editFoto').value = ''; 
-            currentEditImage = item.gambar || '';
-
-            document.getElementById('editModal').style.display = 'flex';
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
-        function closeModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
+        productForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!db) {
+                alert("Database belum terhubung!");
+                return;
+            }
 
-        function compressImageForEdit(file, callback) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function(event) {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 450;
-                    const MAX_HEIGHT = 450;
-                    let width = img.width;
-                    let height = img.height;
+            const productId = document.getElementById('editProductId').value;
+            const payload = {
+                namaToko: document.getElementById('namaToko').value.trim(),
+                noWa: document.getElementById('noWa').value.trim(),
+                nama: document.getElementById('nama').value.trim(),
+                harga: Number(document.getElementById('harga').value) || 0,
+                kategori: document.getElementById('kategori').value,
+                varian: document.getElementById('varian').value.trim(),
+                gambar: document.getElementById('gambar').value.trim(),
+                deskripsi: document.getElementById('deskripsi').value.trim()
+            };
 
-                    if (width > height) {
-                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-                    } else {
-                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    callback(canvas.toDataURL('image/jpeg', 0.5));
+            try {
+                if (productId) {
+                    await db.collection('products').doc(productId).update(payload);
+                    alert("Produk berhasil diperbarui!");
+                } else {
+                    payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('products').add(payload);
+                    alert("Produk berhasil ditayangkan!");
                 }
+                resetForm();
+            } catch (err) {
+                console.error("Gagal menyimpan data:", err);
+                alert("Terjadi kesalahan: " + err.message);
+            }
+        });
+
+        function editProduct(id, namaToko, noWa, nama, harga, kategori, gambar, deskripsi, varian) {
+            document.getElementById('editProductId').value = id;
+            document.getElementById('namaToko').value = namaToko;
+            document.getElementById('noWa').value = noWa;
+            document.getElementById('nama').value = nama;
+            document.getElementById('harga').value = harga;
+            document.getElementById('kategori').value = kategori;
+            document.getElementById('gambar').value = gambar;
+            document.getElementById('deskripsi').value = deskripsi;
+            document.getElementById('varian').value = varian;
+
+            document.getElementById('formTitle').innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: var(--accent);"></i> Edit Produk`;
+            document.getElementById('btnSave').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan`;
+            document.getElementById('btnCancel').style.display = 'block';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm("Apakah Anda yakin ingin menghapus produk ini?")) return;
+            try {
+                await db.collection('products').doc(id).delete();
+                alert("Produk berhasil dihapus!");
+            } catch (err) {
+                console.error("Gagal menghapus produk:", err);
+                alert("Gagal menghapus produk!");
             }
         }
 
-        function saveEdit() {
-            const id = document.getElementById('editId').value;
-            const fileInput = document.getElementById('editFoto');
-            
-            const updateData = {
-                namaToko: document.getElementById('editToko').value.trim(),
-                nama: document.getElementById('editNama').value.trim(),
-                varian: document.getElementById('editVarian').value.trim(),
-                kategori: document.getElementById('editKategori').value,
-                harga: Number(document.getElementById('editHarga').value.replace(/\./g, '')),
-                deskripsi: document.getElementById('editDeskripsi').value.trim()
-            };
-
-            const executeUpdate = (finalImage) => {
-                updateData.gambar = finalImage;
-                db.collection('products').doc(id).update(updateData)
-                    .then(() => {
-                        alert("Perubahan produk Anda berhasil disimpan!");
-                        closeModal();
-                    })
-                    .catch((err) => {
-                        console.error("Gagal update:", err);
-                        alert("Gagal menyimpan perubahan.");
-                    });
-            };
-
-            if (fileInput.files && fileInput.files[0]) {
-                compressImageForEdit(fileInput.files[0], function(compressedBase64) {
-                    executeUpdate(compressedBase64);
-                });
-            } else {
-                executeUpdate(currentEditImage);
-            }
+        function resetForm() {
+            document.getElementById('editProductId').value = '';
+            productForm.reset();
+            document.getElementById('formTitle').innerHTML = `<i class="fa-solid fa-square-plus" style="color: var(--accent);"></i> Tambah Produk Baru`;
+            document.getElementById('btnSave').innerHTML = `<i class="fa-solid fa-paper-plane"></i> Tayangkan Produk`;
+            document.getElementById('btnCancel').style.display = 'none';
         }
 
-        function deleteProduct(id) {
-            if (confirm("Yakin ingin menghapus produk ini dari etalase?")) {
-                db.collection('products').doc(id).delete()
-                    .then(() => alert("Produk berhasil dihapus."))
-                    .catch(err => alert("Gagal menghapus produk."));
-            }
-        }
+        document.addEventListener('DOMContentLoaded', loadSellerProducts);
     </script>
 </body>
 </html>
