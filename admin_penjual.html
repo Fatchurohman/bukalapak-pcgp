@@ -70,13 +70,15 @@
             border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; display: none; margin-top: 0.5rem; width: 100%;
         }
 
-        /* Box Verifikasi WA Penjual */
+        /* Box Cek Produk Sendiri (Khusus Kelola Barang) */
         .filter-wa-box {
-            background: #f8fafc; border: 2px dashed var(--accent); padding: 1.25rem;
+            background: #fffbebf5; border: 2px solid #f59e0b; padding: 1.25rem;
             border-radius: 12px; margin-bottom: 1.5rem;
         }
-        .filter-wa-box p { font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem; }
-        .filter-wa-flex { display: flex; gap: 0.5rem; }
+        .filter-wa-box label { color: #92400e; font-size: 0.95rem; font-weight: 700; }
+        .filter-wa-box p { font-size: 0.85rem; color: #b45309; margin-bottom: 0.75rem; margin-top: 0.2rem; }
+        .filter-wa-flex { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .filter-wa-flex input { flex: 1; min-width: 200px; background: #ffffff; }
 
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
@@ -151,16 +153,17 @@
             </form>
         </div>
 
-        <!-- Tabel Daftar Produk Milik Penjual Sendiri -->
+        <!-- Section Kelola Produk Barang Dagangan -->
         <div class="card">
-            <h2><i class="fa-solid fa-list-check" style="color: var(--accent);"></i> Kelola Produk Saya</h2>
+            <h2><i class="fa-solid fa-list-check" style="color: var(--accent);"></i> Kelola Produk Saya (Edit / Hapus)</h2>
             
+            <!-- Kolom Masukkan No HP Penjual -->
             <div class="filter-wa-box">
-                <label for="filterWaInput">Masukkan Nomor WhatsApp Anda untuk melihat & mengedit barang milik Anda:</label>
-                <p><i class="fa-solid fa-shield-halved"></i> Demi keamanan, produk milik penjual lain disembunyikan dari daftar ini.</p>
+                <label for="filterWaInput"><i class="fa-solid fa-key"></i> Masukkan Nomor WhatsApp Penjual:</label>
+                <p>Ketik nomor WA yang Anda gunakan saat mendaftarkan produk untuk menampilkan daftar barang milik Anda.</p>
                 <div class="filter-wa-flex">
                     <input type="tel" id="filterWaInput" placeholder="Contoh: 08123456789">
-                    <button type="button" class="btn-submit" style="width: auto; padding: 0.75rem 1.5rem;" onclick="loadSellerProducts()"><i class="fa-solid fa-magnifying-glass"></i> Cek Produk Saya</button>
+                    <button type="button" class="btn-submit" style="width: auto; padding: 0.75rem 1.5rem;" onclick="loadSellerProducts()"><i class="fa-solid fa-magnifying-glass"></i> Cek Barang Saya</button>
                 </div>
             </div>
 
@@ -177,7 +180,7 @@
                         </tr>
                     </thead>
                     <tbody id="sellerProductTable">
-                        <tr><td colspan="6" style="text-align: center; color: #64748b;">Silakan masukkan Nomor WhatsApp Anda di atas lalu klik "Cek Produk Saya".</td></tr>
+                        <tr><td colspan="6" style="text-align: center; color: #64748b;">Silakan ketik Nomor WhatsApp Anda pada kolom di atas lalu klik <strong>"Cek Barang Saya"</strong>.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -205,15 +208,15 @@
 
             const inputWa = cleanPhoneNumber(document.getElementById('filterWaInput').value);
             if (!inputWa) {
-                alert("Silakan masukkan Nomor WhatsApp Anda terlebih dahulu!");
+                alert("Silakan masukkan Nomor WhatsApp Anda pada kolom Kelola Produk!");
                 return;
             }
 
-            sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center;">Mencari produk Anda...</td></tr>`;
+            sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center;">Mencari barang-barang milik Anda...</td></tr>`;
 
             db.collection('products').onSnapshot((snapshot) => {
                 if (snapshot.empty) {
-                    sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8;">Belum ada produk yang ditayangkan.</td></tr>`;
+                    sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8;">Belum ada produk terpasang di database.</td></tr>`;
                     return;
                 }
 
@@ -247,7 +250,7 @@
                 });
 
                 if (count === 0) {
-                    sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8;">Tidak ditemukan produk terpasang dengan nomor WA: <strong>${inputWa}</strong></td></tr>`;
+                    sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8;">Tidak ada produk terpasang dengan nomor WA: <strong>${inputWa}</strong></td></tr>`;
                 } else {
                     sellerProductTable.innerHTML = html;
                 }
@@ -291,7 +294,7 @@
                     alert("Produk berhasil ditayangkan!");
                 }
                 
-                // Set otomatis filter WA agar tabel langsung ter-refresh ke produk penjual ini
+                // Isi otomatis kolom WA di tabel dan jalankan pencarian
                 document.getElementById('filterWaInput').value = payload.noWa;
                 loadSellerProducts();
                 resetForm();
