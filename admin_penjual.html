@@ -70,14 +70,21 @@
             border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; display: none; margin-top: 0.5rem; width: 100%;
         }
 
-        /* Tabel Produk */
+        /* Box Verifikasi WA Penjual */
+        .filter-wa-box {
+            background: #f8fafc; border: 2px dashed var(--accent); padding: 1.25rem;
+            border-radius: 12px; margin-bottom: 1.5rem;
+        }
+        .filter-wa-box p { font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem; }
+        .filter-wa-flex { display: flex; gap: 0.5rem; }
+
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
         th { background: #f1f5f9; color: #475569; font-weight: 700; }
         .img-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
 
-        .btn-act { padding: 0.4rem 0.75rem; border-radius: 6px; border: none; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-right: 0.25rem; }
+        .btn-act { padding: 0.45rem 0.75rem; border-radius: 6px; border: none; font-size: 0.8rem; font-weight: 600; cursor: pointer; margin-right: 0.25rem; }
         .btn-edit { background: #3b82f6; color: white; }
         .btn-delete { background: #ef4444; color: white; }
 
@@ -103,7 +110,7 @@
                         <input type="text" id="namaToko" placeholder="Contoh: Bu Siti Sembako" required>
                     </div>
                     <div class="form-group">
-                        <label for="noWa">Nomor WhatsApp</label>
+                        <label for="noWa">Nomor WhatsApp Penjual</label>
                         <input type="tel" id="noWa" placeholder="08123456789" required>
                     </div>
                     <div class="form-group">
@@ -144,9 +151,19 @@
             </form>
         </div>
 
-        <!-- Tabel Daftar Produk Penjual -->
+        <!-- Tabel Daftar Produk Milik Penjual Sendiri -->
         <div class="card">
-            <h2><i class="fa-solid fa-list-check" style="color: var(--accent);"></i> Daftar Produk Terpasang</h2>
+            <h2><i class="fa-solid fa-list-check" style="color: var(--accent);"></i> Kelola Produk Saya</h2>
+            
+            <div class="filter-wa-box">
+                <label for="filterWaInput">Masukkan Nomor WhatsApp Anda untuk melihat & mengedit barang milik Anda:</label>
+                <p><i class="fa-solid fa-shield-halved"></i> Demi keamanan, produk milik penjual lain disembunyikan dari daftar ini.</p>
+                <div class="filter-wa-flex">
+                    <input type="tel" id="filterWaInput" placeholder="Contoh: 08123456789">
+                    <button type="button" class="btn-submit" style="width: auto; padding: 0.75rem 1.5rem;" onclick="loadSellerProducts()"><i class="fa-solid fa-magnifying-glass"></i> Cek Produk Saya</button>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -160,7 +177,7 @@
                         </tr>
                     </thead>
                     <tbody id="sellerProductTable">
-                        <tr><td colspan="6" style="text-align: center;">Memuat data produk...</td></tr>
+                        <tr><td colspan="6" style="text-align: center; color: #64748b;">Silakan masukkan Nomor WhatsApp Anda di atas lalu klik "Cek Produk Saya".</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -174,8 +191,25 @@
         const productForm = document.getElementById('productForm');
         const sellerProductTable = document.getElementById('sellerProductTable');
 
+        function cleanPhoneNumber(phone) {
+            if (!phone) return '';
+            let str = String(phone).trim().replace(/[^0-9]/g, '');
+            if (str.startsWith('62')) {
+                str = '0' + str.substring(2);
+            }
+            return str;
+        }
+
         function loadSellerProducts() {
             if (!db) return;
+
+            const inputWa = cleanPhoneNumber(document.getElementById('filterWaInput').value);
+            if (!inputWa) {
+                alert("Silakan masukkan Nomor WhatsApp Anda terlebih dahulu!");
+                return;
+            }
+
+            sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center;">Mencari produk Anda...</td></tr>`;
 
             db.collection('products').onSnapshot((snapshot) => {
                 if (snapshot.empty) {
@@ -184,26 +218,39 @@
                 }
 
                 let html = '';
+                let count = 0;
+
                 snapshot.docs.forEach((doc) => {
                     const item = doc.data();
-                    const img = item.gambar || 'https://via.placeholder.com/50';
-                    const price = 'Rp ' + Number(item.harga || 0).toLocaleString('id-ID');
+                    const itemWa = cleanPhoneNumber(item.noWa);
 
-                    html += `
-                        <tr>
-                            <td><img src="${img}" class="img-thumb" alt="${item.nama}"></td>
-                            <td><strong>${item.nama || '-'}</strong></td>
-                            <td>${item.namaToko || '-'}</td>
-                            <td>${price}</td>
-                            <td><span style="font-size:0.75rem; background:#f1f5f9; padding:0.2rem 0.5rem; border-radius:4px;">${item.kategori || 'Lainnya'}</span></td>
-                            <td>
-                                <button class="btn-act btn-edit" onclick="editProduct('${doc.id}', '${escapeHtml(item.namaToko)}', '${escapeHtml(item.noWa)}', '${escapeHtml(item.nama)}', '${item.harga}', '${item.kategori}', '${escapeHtml(item.gambar)}', '${escapeHtml(item.deskripsi)}', '${escapeHtml(item.varian || '')}')"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn-act btn-delete" onclick="deleteProduct('${doc.id}')"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
+                    // Filter Hanya Tampilkan Produk Milik WA ini
+                    if (itemWa === inputWa) {
+                        count++;
+                        const img = item.gambar || 'https://via.placeholder.com/50';
+                        const price = 'Rp ' + Number(item.harga || 0).toLocaleString('id-ID');
+
+                        html += `
+                            <tr>
+                                <td><img src="${img}" class="img-thumb" alt="${item.nama}"></td>
+                                <td><strong>${item.nama || '-'}</strong></td>
+                                <td>${item.namaToko || '-'}</td>
+                                <td>${price}</td>
+                                <td><span style="font-size:0.75rem; background:#f1f5f9; padding:0.2rem 0.5rem; border-radius:4px;">${item.kategori || 'Lainnya'}</span></td>
+                                <td>
+                                    <button class="btn-act btn-edit" onclick="editProduct('${doc.id}', '${escapeHtml(item.namaToko)}', '${escapeHtml(item.noWa)}', '${escapeHtml(item.nama)}', '${item.harga}', '${item.kategori}', '${escapeHtml(item.gambar)}', '${escapeHtml(item.deskripsi)}', '${escapeHtml(item.varian || '')}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                                    <button class="btn-act btn-delete" onclick="deleteProduct('${doc.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
                 });
-                sellerProductTable.innerHTML = html;
+
+                if (count === 0) {
+                    sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8;">Tidak ditemukan produk terpasang dengan nomor WA: <strong>${inputWa}</strong></td></tr>`;
+                } else {
+                    sellerProductTable.innerHTML = html;
+                }
             }, (error) => {
                 console.error("Gagal memuat produk penjual:", error);
                 sellerProductTable.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef4444;">Gagal memuat data.</td></tr>`;
@@ -243,6 +290,10 @@
                     await db.collection('products').add(payload);
                     alert("Produk berhasil ditayangkan!");
                 }
+                
+                // Set otomatis filter WA agar tabel langsung ter-refresh ke produk penjual ini
+                document.getElementById('filterWaInput').value = payload.noWa;
+                loadSellerProducts();
                 resetForm();
             } catch (err) {
                 console.error("Gagal menyimpan data:", err);
@@ -286,8 +337,6 @@
             document.getElementById('btnSave').innerHTML = `<i class="fa-solid fa-paper-plane"></i> Tayangkan Produk`;
             document.getElementById('btnCancel').style.display = 'none';
         }
-
-        document.addEventListener('DOMContentLoaded', loadSellerProducts);
     </script>
 </body>
 </html>
